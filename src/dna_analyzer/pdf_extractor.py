@@ -1,49 +1,103 @@
 """
 Extractor de información de reportes PDF y HTML existentes
+Refactorizado con patrón Strategy para facilitar extensión
 """
 
 import re
 import json
+from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 from bs4 import BeautifulSoup
 import pdfplumber
 
 
-class ReportExtractor:
-    """Extrae información de reportes PDF y HTML existentes"""
+class BaseReportParser(ABC):
+    """Clase base abstracta para parsers de reportes"""
     
-    def __init__(self):
-        self.extracted_findings: Dict[str, List[Dict]] = {
-            'promethease': [],
-            'genetic_genie': [],
-            'nutrahacker': []
-        }
-    
-    def extract_promethease_html(self, html_file: str) -> List[Dict]:
+    def __init__(self, source_name: str):
         """
-        Extrae hallazgos del reporte HTML de Promethease
+        Inicializa el parser
         
         Args:
-            html_file: Ruta al archivo promethease.html
+            source_name: Nombre de la fuente (ej: 'promethease', 'genetic_genie')
+        """
+        self.source_name = source_name
+    
+    @abstractmethod
+    def can_parse(self, file_path: str) -> bool:
+        """
+        Verifica si este parser puede procesar el archivo dado
+        
+        Args:
+            file_path: Ruta al archivo
+            
+        Returns:
+            True si puede procesar el archivo
+        """
+        pass
+    
+    @abstractmethod
+    def parse(self, file_path: str) -> List[Dict[str, Any]]:
+        """
+        Parsea el archivo y extrae hallazgos
+        
+        Args:
+            file_path: Ruta al archivo
             
         Returns:
             Lista de hallazgos encontrados
         """
+        pass
+    
+    def extract_pdf_text(self, pdf_file: str) -> str:
+        """
+        Extrae texto de un archivo PDF (método auxiliar compartido)
+        
+        Args:
+            pdf_file: Ruta al archivo PDF
+            
+        Returns:
+            Texto extraído del PDF
+        """
+        text = ""
+        
+        try:
+            with pdfplumber.open(pdf_file) as pdf:
+                for page in pdf.pages:
+                    page_text = page.extract_text()
+                    if page_text:
+                        text += page_text + "\n"
+        except Exception as e:
+            print(f"⚠ Error extrayendo PDF {pdf_file}: {e}")
+        
+        return text
+
+
+class PrometheaseHTMLParser(BaseReportParser):
+    """Parser para reportes HTML de Promethease"""
+    
+    def __init__(self):
+        super().__init__('promethease')
+    
+    def can_parse(self, file_path: str) -> bool:
+        """Verifica si es un archivo HTML de Promethease"""
+        path = Path(file_path)
+        return path.suffix.lower() == '.html' and 'promethease' in path.name.lower()
+    
+    def parse(self, file_path: str) -> List[Dict[str, Any]]:
+        """Extrae hallazgos del reporte HTML de Promethease"""
         findings = []
         
         try:
-            with open(html_file, 'r', encoding='utf-8', errors='ignore') as f:
+            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
                 content = f.read()
             
             # Buscar patrones de SNPs en el HTML
-            # Promethease almacena datos en JavaScript embebido
-            # Buscar rsIDs y genotipos
             rsid_pattern = r'rs\d+'
             rsids_found = set(re.findall(rsid_pattern, content))
             
             # Buscar secciones con información de genotipos
-            # Patrón común: rsID seguido de genotipo
             geno_pattern = r'(rs\d+)([AGCT]{2})'
             geno_matches = re.findall(geno_pattern, content)
             
@@ -51,7 +105,7 @@ class ReportExtractor:
                 findings.append({
                     'rsid': rsid,
                     'genotype': genotype,
-                    'source': 'promethease',
+                    'source': self.source_name,
                     'raw_text': f'{rsid} {genotype}'
                 })
             
@@ -73,7 +127,7 @@ class ReportExtractor:
                                 findings.append({
                                     'rsid': rsid,
                                     'description': text[:200],
-                                    'source': 'promethease',
+                                    'source': self.source_name,
                                     'snpedia_url': href
                                 })
             
@@ -82,28 +136,29 @@ class ReportExtractor:
         except Exception as e:
             print(f"⚠ Error extrayendo Promethease HTML: {e}")
         
-        self.extracted_findings['promethease'] = findings
         return findings
+
+
+class PrometheaseJSONParser(BaseReportParser):
+    """Parser para reportes JSON de Promethease"""
     
-    def extract_promethease_json(self, json_file: str) -> List[Dict[str, Any]]:
-        """
-        Carga hallazgos desde el archivo JSON estructurado de Promethease.
-        
-        Este método preserva todos los metadatos importantes como magnitude,
-        repute, summary, genes, y condiciones médicas.
-        
-        Args:
-            json_file: Ruta al archivo JSON de hallazgos genéticos
-            
-        Returns:
-            Lista de hallazgos encontrados con metadatos completos
-        """
+    def __init__(self):
+        super().__init__('promethease')
+    
+    def can_parse(self, file_path: str) -> bool:
+        """Verifica si es un archivo JSON de Promethease"""
+        path = Path(file_path)
+        return path.suffix.lower() == '.json' and ('promethease' in path.name.lower() or 
+                                                   'hallazgos_geneticos' in path.name.lower())
+    
+    def parse(self, file_path: str) -> List[Dict[str, Any]]:
+        """Carga hallazgos desde el archivo JSON estructurado de Promethease"""
         findings = []
         
         try:
-            json_path = Path(json_file)
+            json_path = Path(file_path)
             if not json_path.exists():
-                print(f"⚠ Archivo JSON no encontrado: {json_file}")
+                print(f"⚠ Archivo JSON no encontrado: {file_path}")
                 return findings
             
             with open(json_path, 'r', encoding='utf-8') as f:
@@ -123,7 +178,7 @@ class ReportExtractor:
                 finding = {
                     'rsid': rsid,
                     'genotype': genotype,
-                    'source': 'promethease',
+                    'source': self.source_name,
                     'magnitude': entry.get('magnitude'),
                     'max_magnitude': entry.get('max_magnitude'),
                     'repute': entry.get('repute'),
@@ -152,54 +207,28 @@ class ReportExtractor:
             import traceback
             traceback.print_exc()
         
-        # Combinar con hallazgos existentes si los hay
-        if self.extracted_findings.get('promethease'):
-            # Si ya hay hallazgos de HTML, los combinamos
-            existing = self.extracted_findings['promethease']
-            # Priorizar JSON sobre HTML (más completo)
-            self.extracted_findings['promethease'] = findings + existing
-        else:
-            self.extracted_findings['promethease'] = findings
-        
         return findings
+
+
+class GeneticGenieParser(BaseReportParser):
+    """Parser para reportes PDF de Genetic Genie"""
     
-    def extract_pdf_text(self, pdf_file: str) -> str:
-        """
-        Extrae texto de un archivo PDF
-        
-        Args:
-            pdf_file: Ruta al archivo PDF
-            
-        Returns:
-            Texto extraído del PDF
-        """
-        text = ""
-        
-        try:
-            with pdfplumber.open(pdf_file) as pdf:
-                for page in pdf.pages:
-                    page_text = page.extract_text()
-                    if page_text:
-                        text += page_text + "\n"
-        except Exception as e:
-            print(f"⚠ Error extrayendo PDF {pdf_file}: {e}")
-        
-        return text
+    def __init__(self):
+        super().__init__('genetic_genie')
     
-    def extract_genetic_genie(self, pdf_file: str) -> List[Dict]:
-        """
-        Extrae hallazgos del reporte de Genetic Genie
-        
-        Args:
-            pdf_file: Ruta al archivo PDF de Genetic Genie
-            
-        Returns:
-            Lista de hallazgos encontrados
-        """
+    def can_parse(self, file_path: str) -> bool:
+        """Verifica si es un archivo PDF de Genetic Genie"""
+        path = Path(file_path)
+        name_lower = path.name.lower()
+        return (path.suffix.lower() == '.pdf' and 
+                ('genetic_genie' in name_lower or 'geneticgenie' in name_lower))
+    
+    def parse(self, file_path: str) -> List[Dict[str, Any]]:
+        """Extrae hallazgos del reporte de Genetic Genie"""
         findings = []
         
         try:
-            text = self.extract_pdf_text(pdf_file)
+            text = self.extract_pdf_text(file_path)
             
             # Buscar rsIDs en el texto
             rsid_pattern = r'rs\d+'
@@ -219,7 +248,7 @@ class ReportExtractor:
                     findings.append({
                         'rsid': rsid,
                         'genotype': genotype,
-                        'source': 'genetic_genie',
+                        'source': self.source_name,
                         'context': match.strip()
                     })
             
@@ -228,23 +257,28 @@ class ReportExtractor:
         except Exception as e:
             print(f"⚠ Error extrayendo Genetic Genie: {e}")
         
-        self.extracted_findings['genetic_genie'] = findings
         return findings
+
+
+class NutraHackerParser(BaseReportParser):
+    """Parser para reportes PDF de NutraHacker"""
     
-    def extract_nutrahacker(self, pdf_file: str) -> List[Dict]:
-        """
-        Extrae hallazgos del reporte de NutraHacker
-        
-        Args:
-            pdf_file: Ruta al archivo PDF de NutraHacker
-            
-        Returns:
-            Lista de hallazgos encontrados
-        """
+    def __init__(self):
+        super().__init__('nutrahacker')
+    
+    def can_parse(self, file_path: str) -> bool:
+        """Verifica si es un archivo PDF de NutraHacker"""
+        path = Path(file_path)
+        name_lower = path.name.lower()
+        return (path.suffix.lower() == '.pdf' and 
+                ('nutrahacker' in name_lower or 'nutra_hacker' in name_lower))
+    
+    def parse(self, file_path: str) -> List[Dict[str, Any]]:
+        """Extrae hallazgos del reporte de NutraHacker"""
         findings = []
         
         try:
-            text = self.extract_pdf_text(pdf_file)
+            text = self.extract_pdf_text(file_path)
             
             # Buscar rsIDs
             rsid_pattern = r'rs\d+'
@@ -271,7 +305,7 @@ class ReportExtractor:
                 
                 findings.append({
                     'rsid': rsid,
-                    'source': 'nutrahacker',
+                    'source': self.source_name,
                     'context': context_text[:300],
                     'supplements': supplements_mentioned
                 })
@@ -281,6 +315,239 @@ class ReportExtractor:
         except Exception as e:
             print(f"⚠ Error extrayendo NutraHacker: {e}")
         
+        return findings
+
+
+class FoundMyFitnessParser(BaseReportParser):
+    """Parser para reportes PDF de FoundMyFitness"""
+    
+    def __init__(self):
+        super().__init__('foundmyfitness')
+    
+    def can_parse(self, file_path: str) -> bool:
+        """Verifica si es un archivo PDF de FoundMyFitness"""
+        path = Path(file_path)
+        name_lower = path.name.lower()
+        return (path.suffix.lower() == '.pdf' and 
+                ('foundmyfitness' in name_lower or 'found_my_fitness' in name_lower))
+    
+    def parse(self, file_path: str) -> List[Dict[str, Any]]:
+        """Extrae hallazgos del reporte de FoundMyFitness"""
+        findings = []
+        
+        try:
+            text = self.extract_pdf_text(file_path)
+            
+            # Buscar rsIDs en el texto
+            rsid_pattern = r'rs\d+'
+            rsids = set(re.findall(rsid_pattern, text))
+            
+            for rsid in rsids:
+                # Buscar contexto alrededor del rsID
+                pattern = rf'.{{0,150}}{re.escape(rsid)}.{{0,150}}'
+                matches = re.findall(pattern, text, re.IGNORECASE)
+                
+                context_text = ' '.join(matches[:2])
+                
+                findings.append({
+                    'rsid': rsid,
+                    'source': self.source_name,
+                    'context': context_text[:300]
+                })
+            
+            print(f"[OK] FoundMyFitness: {len(findings)} hallazgos extraidos")
+            
+        except Exception as e:
+            print(f"⚠ Error extrayendo FoundMyFitness: {e}")
+        
+        return findings
+
+
+class EpigeneticParser(BaseReportParser):
+    """Parser para reportes PDF de tests epigenéticos (WellMultiD, TruDiagnostic, etc.)"""
+    
+    def __init__(self):
+        super().__init__('epigenetic')
+        self.epigenetic_keywords = [
+            'epigenetic', 'wellmultid', 'trudiagnostic', 'elysium',
+            'methylation', 'biological age', 'epigenetic age', 'dna methylation'
+        ]
+    
+    def can_parse(self, file_path: str) -> bool:
+        """Verifica si es un archivo PDF de test epigenético"""
+        path = Path(file_path)
+        name_lower = path.name.lower()
+        
+        if path.suffix.lower() != '.pdf':
+            return False
+        
+        # Verificar si contiene palabras clave epigenéticas
+        return any(keyword in name_lower for keyword in self.epigenetic_keywords)
+    
+    def parse(self, file_path: str) -> List[Dict[str, Any]]:
+        """Extrae información epigenética del reporte"""
+        findings = []
+        
+        try:
+            text = self.extract_pdf_text(file_path)
+            
+            # Buscar información de edad epigenética
+            age_patterns = [
+                r'biological age[:\s]+(\d+\.?\d*)',
+                r'epigenetic age[:\s]+(\d+\.?\d*)',
+                r'age[:\s]+(\d+\.?\d*)\s*years',
+            ]
+            
+            biological_age = None
+            for pattern in age_patterns:
+                match = re.search(pattern, text, re.IGNORECASE)
+                if match:
+                    try:
+                        biological_age = float(match.group(1))
+                        break
+                    except ValueError:
+                        continue
+            
+            # Buscar niveles de metilación
+            methylation_patterns = [
+                r'methylation[:\s]+([\d.]+)%',
+                r'global methylation[:\s]+([\d.]+)',
+            ]
+            
+            methylation_level = None
+            for pattern in methylation_patterns:
+                match = re.search(pattern, text, re.IGNORECASE)
+                if match:
+                    try:
+                        methylation_level = float(match.group(1))
+                        break
+                    except ValueError:
+                        continue
+            
+            # Buscar rsIDs relacionados con metilación
+            rsid_pattern = r'rs\d+'
+            rsids = set(re.findall(rsid_pattern, text))
+            
+            # Crear hallazgo epigenético general
+            if biological_age or methylation_level or rsids:
+                finding = {
+                    'source': self.source_name,
+                    'file_name': Path(file_path).name,
+                    'biological_age': biological_age,
+                    'methylation_level': methylation_level,
+                    'related_snps': list(rsids)[:20] if rsids else [],  # Limitar a 20
+                    'type': 'epigenetic_data'
+                }
+                findings.append(finding)
+            
+            print(f"[OK] Epigenetic: {len(findings)} hallazgos extraidos")
+            
+        except Exception as e:
+            print(f"⚠ Error extrayendo datos epigenéticos: {e}")
+        
+        return findings
+
+
+class ReportExtractor:
+    """Extrae información de reportes PDF y HTML existentes usando parsers específicos"""
+    
+    def __init__(self):
+        self.extracted_findings: Dict[str, List[Dict]] = {}
+        
+        # Registrar todos los parsers disponibles
+        self.parsers: List[BaseReportParser] = [
+            PrometheaseHTMLParser(),
+            PrometheaseJSONParser(),
+            GeneticGenieParser(),
+            NutraHackerParser(),
+            FoundMyFitnessParser(),
+            EpigeneticParser()
+        ]
+    
+    def _get_parser_for_file(self, file_path: str) -> Optional[BaseReportParser]:
+        """
+        Encuentra el parser adecuado para un archivo
+        
+        Args:
+            file_path: Ruta al archivo
+            
+        Returns:
+            Parser que puede procesar el archivo, o None si no hay ninguno
+        """
+        for parser in self.parsers:
+            if parser.can_parse(file_path):
+                return parser
+        return None
+    
+    def extract_file(self, file_path: str) -> List[Dict[str, Any]]:
+        """
+        Extrae información de un archivo usando el parser apropiado
+        
+        Args:
+            file_path: Ruta al archivo
+            
+        Returns:
+            Lista de hallazgos encontrados
+        """
+        parser = self._get_parser_for_file(file_path)
+        
+        if not parser:
+            print(f"⚠ No se encontró parser para: {file_path}")
+            return []
+        
+        findings = parser.parse(file_path)
+        
+        # Agregar a la colección de hallazgos por fuente
+        source = parser.source_name
+        if source not in self.extracted_findings:
+            self.extracted_findings[source] = []
+        
+        # Combinar con hallazgos existentes (evitar duplicados)
+        existing_rsids = {f.get('rsid') for f in self.extracted_findings[source] if 'rsid' in f}
+        for finding in findings:
+            # Si es un hallazgo con rsID, verificar si ya existe
+            if 'rsid' in finding:
+                if finding['rsid'] not in existing_rsids:
+                    self.extracted_findings[source].append(finding)
+                    existing_rsids.add(finding['rsid'])
+            else:
+                # Si no tiene rsID (ej: datos epigenéticos), agregar directamente
+                self.extracted_findings[source].append(finding)
+        
+        return findings
+    
+    # Métodos de compatibilidad hacia atrás
+    def extract_promethease_html(self, html_file: str) -> List[Dict]:
+        """Método de compatibilidad: extrae Promethease HTML"""
+        parser = PrometheaseHTMLParser()
+        findings = parser.parse(html_file)
+        self.extracted_findings['promethease'] = findings
+        return findings
+    
+    def extract_promethease_json(self, json_file: str) -> List[Dict[str, Any]]:
+        """Método de compatibilidad: extrae Promethease JSON"""
+        parser = PrometheaseJSONParser()
+        findings = parser.parse(json_file)
+        # Priorizar JSON sobre HTML si ambos existen
+        if 'promethease' in self.extracted_findings:
+            self.extracted_findings['promethease'] = findings + self.extracted_findings['promethease']
+        else:
+            self.extracted_findings['promethease'] = findings
+        return findings
+    
+    def extract_genetic_genie(self, pdf_file: str) -> List[Dict]:
+        """Método de compatibilidad: extrae Genetic Genie"""
+        parser = GeneticGenieParser()
+        findings = parser.parse(pdf_file)
+        if 'genetic_genie' not in self.extracted_findings:
+            self.extracted_findings['genetic_genie'] = []
+        self.extracted_findings['genetic_genie'].extend(findings)
+        return findings
+    
+    def extract_nutrahacker(self, pdf_file: str) -> List[Dict]:
+        """Método de compatibilidad: extrae NutraHacker"""
+        parser = NutraHackerParser()
+        findings = parser.parse(pdf_file)
         self.extracted_findings['nutrahacker'] = findings
         return findings
     
@@ -296,6 +563,8 @@ class ReportExtractor:
             for finding in findings:
                 if 'rsid' in finding:
                     rsids.add(finding['rsid'])
+                # También buscar en datos epigenéticos
+                if 'related_snps' in finding:
+                    rsids.update(finding['related_snps'])
         
         return rsids
-

@@ -1,5 +1,5 @@
 # Reporte de Hallazgos Genéticos Completos
-**Generado el:** 2025-12-24 20:24:32
+**Generado el:** 2025-12-25 18:02:29
 
 ---
 
@@ -42,6 +42,7 @@ Si encuentras hallazgos preocupantes, consulta con un:
 ### 🔴 rs429358 - APOE
 
 - **Genotipo:** `TT`
+- **Encontrado en reportes:** foundmyfitness
 - **Genes:** APOE
 
 **Descripción:** Variante ε4 del gen APOE asociada con mayor riesgo de Alzheimer
@@ -59,6 +60,7 @@ Si encuentras hallazgos preocupantes, consulta con un:
 ### 🔴 rs7412 - APOE
 
 - **Genotipo:** `CC`
+- **Encontrado en reportes:** foundmyfitness
 - **Genes:** APOE
 
 **Descripción:** Variante ε2 del gen APOE (protección contra Alzheimer)
@@ -92,6 +94,7 @@ Si encuentras hallazgos preocupantes, consulta con un:
 ### 🟡 rs9939609 - FTO
 
 - **Genotipo:** `AT`
+- **Encontrado en reportes:** foundmyfitness
 - **Genes:** FTO
 
 **Descripción:** Variante asociada con mayor riesgo de obesidad y diabetes tipo 2
@@ -109,6 +112,7 @@ Si encuentras hallazgos preocupantes, consulta con un:
 ### 🟡 rs7903146 - TCF7L2
 
 - **Genotipo:** `CC`
+- **Encontrado en reportes:** foundmyfitness
 - **Genes:** TCF7L2
 
 **Descripción:** Variante asociada con mayor riesgo de diabetes tipo 2
@@ -178,6 +182,7 @@ Si encuentras hallazgos preocupantes, consulta con un:
 ### 🔴 rs4149056 - SLCO1B1
 
 - **Genotipo:** `CT`
+- **Encontrado en reportes:** foundmyfitness
 - **Genes:** SLCO1B1
 
 **Descripción:** Mayor riesgo de miopatía con estatinas
@@ -194,6 +199,7 @@ Si encuentras hallazgos preocupantes, consulta con un:
 ### 🔴 rs9923231 - VKORC1
 
 - **Genotipo:** `CT`
+- **Encontrado en reportes:** foundmyfitness
 - **Genes:** VKORC1
 
 **Descripción:** Afecta dosis requerida de warfarina
@@ -214,7 +220,7 @@ Si encuentras hallazgos preocupantes, consulta con un:
 ### 🔴 rs1801394 - MTRR
 
 - **Genotipo:** `AG`
-- **Encontrado en reportes:** nutrahacker
+- **Encontrado en reportes:** genetic_genie, nutrahacker, foundmyfitness
 - **Genes:** MTRR
 
 **Descripción:** MTRR A66G - reduce reciclaje de B12
@@ -231,7 +237,7 @@ Si encuentras hallazgos preocupantes, consulta con un:
 ### 🟡 rs1801133 - MTHFR
 
 - **Genotipo:** `AA`
-- **Encontrado en reportes:** promethease, nutrahacker
+- **Encontrado en reportes:** promethease, genetic_genie, nutrahacker, foundmyfitness
 - **Magnitud:** 2.8
 - **Reputación:** ⚠️ Bad
 - **Frecuencia poblacional:** 8.8%
@@ -283,6 +289,7 @@ Drugbank, Folate, GeneTest, SNPs, on, Arrays, Kelly, Nutrinomica, NutraHacker, S
 ### 🟡 rs1801131 - MTHFR
 
 - **Genotipo:** `TT`
+- **Encontrado en reportes:** genetic_genie, foundmyfitness
 - **Genes:** MTHFR
 
 **Descripción:** MTHFR A1298C - reduce conversión de folato
@@ -299,6 +306,7 @@ Drugbank, Folate, GeneTest, SNPs, on, Arrays, Kelly, Nutrinomica, NutraHacker, S
 ### 🟡 rs1544410 - VDR
 
 - **Genotipo:** `CC`
+- **Encontrado en reportes:** genetic_genie
 - **Genes:** VDR
 
 **Descripción:** VDR BsmI - afecta receptores de vitamina D
@@ -331,6 +339,7 @@ Drugbank, Folate, GeneTest, SNPs, on, Arrays, Kelly, Nutrinomica, NutraHacker, S
 ### 🟡 rs731236 - VDR
 
 - **Genotipo:** `AA`
+- **Encontrado en reportes:** genetic_genie
 - **Genes:** VDR
 
 **Descripción:** VDR TaqI - afecta receptores de vitamina D
@@ -347,6 +356,7 @@ Drugbank, Folate, GeneTest, SNPs, on, Arrays, Kelly, Nutrinomica, NutraHacker, S
 ### 🟡 rs12934922 - BCMO1
 
 - **Genotipo:** `AA`
+- **Encontrado en reportes:** foundmyfitness
 - **Genes:** BCMO1
 
 **Descripción:** Reduce conversión de beta-caroteno a vitamina A
@@ -363,7 +373,7 @@ Drugbank, Folate, GeneTest, SNPs, on, Arrays, Kelly, Nutrinomica, NutraHacker, S
 ### 🟡 rs601338 - FUT2
 
 - **Genotipo:** `AA`
-- **Encontrado en reportes:** promethease
+- **Encontrado en reportes:** promethease, foundmyfitness
 - **Magnitud:** 2.5
 - **Reputación:** ✅ Good
 - **Frecuencia poblacional:** 30.4%
@@ -387,6 +397,7 @@ Drugbank, Folate, GeneTest, SNPs, on, Arrays, Kelly, Nutrinomica, NutraHacker, S
 ### 🟡 rs4988235 - LCT
 
 - **Genotipo:** `AG`
+- **Encontrado en reportes:** foundmyfitness
 - **Genes:** LCT
 
 **Descripción:** Intolerancia a lactosa en adultos
@@ -403,6 +414,7 @@ Drugbank, Folate, GeneTest, SNPs, on, Arrays, Kelly, Nutrinomica, NutraHacker, S
 ### 🟡 rs4680 - COMT
 
 - **Genotipo:** `GG`
+- **Encontrado en reportes:** genetic_genie, foundmyfitness
 - **Genes:** COMT
 
 **Descripción:** COMT Val158Met - velocidad de metabolismo de dopamina
@@ -420,7 +432,7 @@ Drugbank, Folate, GeneTest, SNPs, on, Arrays, Kelly, Nutrinomica, NutraHacker, S
 ### 🟡 rs4880 - SOD2
 
 - **Genotipo:** `GG`
-- **Encontrado en reportes:** genetic_genie, nutrahacker
+- **Encontrado en reportes:** genetic_genie, nutrahacker, foundmyfitness
 - **Genes:** SOD2
 
 **Descripción:** SOD2 Ala16Val - función antioxidante mitocondrial
@@ -441,7 +453,7 @@ Drugbank, Folate, GeneTest, SNPs, on, Arrays, Kelly, Nutrinomica, NutraHacker, S
 ### 🟡 rs2802292 - FOXO3
 
 - **Genotipo:** `TT`
-- **Encontrado en reportes:** promethease
+- **Encontrado en reportes:** promethease, foundmyfitness
 - **Magnitud:** 2.5
 - **Reputación:** ⚠️ Bad
 - **Frecuencia poblacional:** 34.4%

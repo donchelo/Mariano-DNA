@@ -10,16 +10,18 @@ from .analyzer import Finding
 class ReportGenerator:
     """Genera reportes en formato Markdown"""
     
-    def __init__(self, findings: List[Finding], statistics: dict):
+    def __init__(self, findings: List[Finding], statistics: dict, epigenetic_data: List[dict] = None):
         """
         Inicializa el generador
         
         Args:
             findings: Lista de hallazgos genéticos
             statistics: Estadísticas del análisis
+            epigenetic_data: Lista de datos epigenéticos encontrados (opcional)
         """
         self.findings = findings
         self.statistics = statistics
+        self.epigenetic_data = epigenetic_data or []
     
     def generate(self) -> str:
         """
@@ -57,6 +59,8 @@ class ReportGenerator:
         lines.append(f"- **Total de hallazgos importantes:** {self.statistics['total_findings']}")
         lines.append(f"- **Hallazgos encontrados en genoma:** {self.statistics['found_in_genome']}")
         lines.append(f"- **Hallazgos solo en reportes:** {self.statistics['found_in_reports_only']}")
+        if self.epigenetic_data:
+            lines.append(f"- **Reportes epigenéticos procesados:** {len(self.epigenetic_data)}")
         lines.append("")
         
         # Estadísticas por categoría
@@ -114,6 +118,43 @@ class ReportGenerator:
             
             lines.append("---")
             lines.append("")
+        
+        # Sección de Epigenética
+        if self.epigenetic_data:
+            lines.append("## 🧬 Datos Epigenéticos")
+            lines.append("")
+            lines.append("Los datos epigenéticos muestran modificaciones químicas del ADN que pueden cambiar con el tiempo y están influenciadas por factores ambientales, dieta, ejercicio y estilo de vida.")
+            lines.append("")
+            lines.append("### Comparación: Genética vs Epigenética")
+            lines.append("")
+            lines.append("- **Genética (SNPs):** Variantes permanentes heredadas que no cambian")
+            lines.append("- **Epigenética (Metilación):** Modificaciones modificables que reflejan el estado actual")
+            lines.append("")
+            
+            for epi_data in self.epigenetic_data:
+                lines.append(f"### 📄 {epi_data.get('file_name', 'Reporte Epigenético')}")
+                lines.append("")
+                
+                if epi_data.get('biological_age'):
+                    lines.append(f"- **Edad Biológica (Epigenética):** {epi_data['biological_age']} años")
+                    lines.append("")
+                
+                if epi_data.get('methylation_level'):
+                    lines.append(f"- **Nivel de Metilación Global:** {epi_data['methylation_level']}%")
+                    lines.append("")
+                
+                if epi_data.get('related_snps'):
+                    lines.append(f"- **SNPs relacionados encontrados:** {len(epi_data['related_snps'])}")
+                    if len(epi_data['related_snps']) <= 10:
+                        snps_str = ', '.join(epi_data['related_snps'])
+                        lines.append(f"  - {snps_str}")
+                    else:
+                        snps_str = ', '.join(epi_data['related_snps'][:10])
+                        lines.append(f"  - {snps_str}... (y {len(epi_data['related_snps']) - 10} más)")
+                    lines.append("")
+                
+                lines.append("---")
+                lines.append("")
         
         # Referencias y recursos
         lines.append("## 📚 Recursos Adicionales")

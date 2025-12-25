@@ -15,7 +15,7 @@ Mariano DNA/
 │   │   │                    #   - Relojes biológicos (edad epigenética)
 │   │   │                    #   - Niveles de metilación del ADN
 │   │   │                    #   - Perfiles de metilación por gen
-│   │   ├── reports/         # Reportes PDF de proveedores
+│   │   ├── reportes_proveedores/  # Reportes PDF de proveedores externos
 │   │   │   ├── promethease/ # Archivos HTML y TXT de Promethease
 │   │   │   └── epigenetic/  # Reportes PDF de tests epigenéticos
 │   │   │                    #   (TruDiagnostic, Elysium, etc.)
@@ -25,10 +25,14 @@ Mariano DNA/
 │       └── epigenetics/     # Resultados procesados de análisis epigenético
 ├── docs/                    # Documentación de referencia
 │   └── reference/           # Guías y protocolos de referencia
-├── reports/                  # Resultados finales y protocolos generados
+├── outputs/                 # Resultados generados
+│   ├── analisis/            # Reportes técnicos generados por software
+│   ├── protocolos/          # Protocolos de uso diario
+│   └── genetic_genie/       # Reportes específicos de Genetic Genie
 ├── src/                     # Código fuente
 │   ├── dna_analyzer/        # Módulo principal de análisis genético
 │   └── scripts/             # Scripts de ejecución
+├── ESTRUCTURA_PROYECTO.md   # Documento de estructura y naming
 └── README.md                # Este archivo
 ```
 
@@ -63,16 +67,32 @@ Ambos tipos de datos son complementarios: la genética te dice tu predisposició
 | `Guia_Monitoreo_Resultados.md` | **Bitácora de Seguimiento**. Registro de síntomas (energía, sueño, ánimo) y métricas de éxito. | Registrar cambios mensualmente para ajustar el plan. |
 | `Guia_Rapida_Referencia.md` | **Resumen Diario**. Lista rápida de dosis por horario (mañana/tarde/noche) y señales de advertencia. | Consulta rápida diaria o impresión para tener a mano. |
 
-#### Reportes Generados (`reports/`)
+#### Análisis Generados (`outputs/analisis/`)
 
 | Archivo | Descripción | Uso |
 | :--- | :--- | :--- |
-| `Hallazgos_Geneticos_Completos.md` | **Reporte Consolidado**. Análisis completo de variantes genéticas encontradas. | Revisar después de ejecutar el análisis. |
-| `Lista_Compras_Suplementos.md` | **Checklist de Compras**. Marcas recomendadas (Thorne, Pure, etc.), dosis y advertencias de calidad. | Organizar las compras de los suplementos necesarios. |
-| `Calendario_Suplementacion.md` | **Cronograma de Inicio**. Plan de introducción gradual (Semana 1-8) para evitar efectos secundarios. | Seguir día a día durante los primeros dos meses. |
-| `Protocolo de suplementacion semanal.md` | **Protocolo Semanal**. Plan de suplementación organizado por semanas. | Seguimiento semanal del plan. |
-| `suplementos disponibles.md` | **Inventario de Suplementos**. Lista de suplementos disponibles y sus características. | Consulta de disponibilidad y características. |
-| `Perfil_Ancestria_Mariano_Garcia_Posada.md` | **Perfil de Ancestría**. Análisis de composición genética ancestral. | Referencia de ancestría. |
+| `hallazgos_geneticos_completos.md` | **Reporte Consolidado**. Análisis completo de variantes genéticas encontradas. | Revisar después de ejecutar el análisis. |
+| `perfil_ancestria_mariano_garcia_posada.md` | **Perfil de Ancestría**. Análisis de composición genética ancestral. | Referencia de ancestría. |
+
+#### Protocolos de Uso Diario (`outputs/protocolos/`)
+
+| Archivo | Descripción | Uso |
+| :--- | :--- | :--- |
+| `calendario_suplementacion.md` | **Cronograma de Inicio**. Plan de introducción gradual (Semana 1-8) para evitar efectos secundarios. | Seguir día a día durante los primeros dos meses. |
+| `protocolo_suplementacion_semanal.md` | **Protocolo Semanal**. Plan de suplementación organizado por semanas. | Seguimiento semanal del plan. |
+| `lista_compras_suplementos.md` | **Checklist de Compras**. Marcas recomendadas (Thorne, Pure, etc.), dosis y advertencias de calidad. | Organizar las compras de los suplementos necesarios. |
+| `suplementos_disponibles.md` | **Inventario de Suplementos**. Lista de suplementos disponibles y sus características. | Consulta de disponibilidad y características. |
+
+#### Reportes de Genetic Genie (`outputs/genetic_genie/`)
+
+| Archivo | Descripción | Uso |
+| :--- | :--- | :--- |
+| `farmacogenetica.md` | Informe técnico de farmacogenética. Variantes relacionadas con respuesta a fármacos. | Referencia para decisiones médicas. |
+| `variantes_significativas.md` | Variantes clínicamente significativas con impacto clínico potencial. | Referencia clínica. |
+| `variantes_geneticas.md` | Variantes genéticas generales. | Referencia técnica. |
+| `mutaciones_raras.md` | Mutaciones raras encontradas. | Referencia técnica. |
+| `mutaciones_no_comunes.md` | Mutaciones no comunes. | Referencia técnica. |
+| `tarjeta_alerta_medica.md` | Tarjeta de alerta médica con información crítica para emergencias. | Llevar en billetera o tener a mano. |
 
 ### 💻 Software de Análisis (`src/`)
 
@@ -129,7 +149,7 @@ Este módulo permite automatizar el cruce de información genética y la generac
    - Generará un reporte consolidado
 
 4. **Revisar resultados:**
-   - El reporte principal se genera en `reports/Hallazgos_Geneticos_Completos.md`
+   - El reporte principal se genera en `outputs/analisis/hallazgos_geneticos_completos.md`
    - Incluye hallazgos organizados por categoría e importancia
    - Cada hallazgo incluye genotipo, implicaciones y referencias
 
@@ -137,14 +157,14 @@ Este módulo permite automatizar el cruce de información genética y la generac
 
 1. **Lectura inicial:**
    - Lee `docs/reference/README_Suplementacion.md` para entender tus variantes clave (MTHFR, COMT, VDR, etc.)
-   - Revisa `reports/Hallazgos_Geneticos_Completos.md` después de ejecutar el análisis
+   - Revisa `outputs/analisis/hallazgos_geneticos_completos.md` después de ejecutar el análisis
 
 2. **Consulta profesional:**
    - Consulta con un profesional de la salud antes de iniciar cualquier suplementación
    - Lleva el `docs/reference/examenes_sangre_protocolo.md` para establecer valores basales
 
 3. **Implementación gradual:**
-   - Sigue el `reports/Calendario_Suplementacion.md` para introducir los suplementos de forma segura
+   - Sigue el `outputs/protocolos/calendario_suplementacion.md` para introducir los suplementos de forma segura
    - Usa `docs/reference/Guia_Rapida_Referencia.md` como referencia diaria
    - Registra cambios en `docs/reference/Guia_Monitoreo_Resultados.md`
 
@@ -152,7 +172,7 @@ Este módulo permite automatizar el cruce de información genética y la generac
 
 Los tests epigenéticos (relojes biológicos, niveles de metilación) deben almacenarse en:
 - **Datos brutos**: `data/raw/epigenetics/` (archivos CSV, TXT de proveedores)
-- **Reportes PDF**: `data/raw/reports/epigenetic/` (reportes finales de TruDiagnostic, Elysium, etc.)
+- **Reportes PDF**: `data/raw/reportes_proveedores/epigenetic/` (reportes finales de TruDiagnostic, Elysium, etc.)
 - **Datos procesados**: `data/processed/epigenetics/` (análisis derivados o resultados procesados)
 
 > **Nota**: El software actual se enfoca en análisis genético. Los datos epigenéticos se almacenan para referencia futura y análisis manual comparativo.
@@ -184,7 +204,16 @@ Los tests epigenéticos (relojes biológicos, niveles de metilación) deben alma
 
 ---
 
+---
+
+## 📚 Documentación Adicional
+
+Para más detalles sobre la estructura del proyecto, naming conventions y organización de archivos, consulta:
+- **`ESTRUCTURA_PROYECTO.md`**: Documento completo que explica el propósito de cada carpeta y archivo, así como las reglas de naming del proyecto.
+
+---
+
 **Última actualización:** Diciembre 2025  
 **Propietario:** Mariano García Posada  
-**Versión del proyecto:** 1.0
+**Versión del proyecto:** 2.0 (Reorganizado)
 

@@ -1,0 +1,275 @@
+{
+  "snps": [
+    {
+      "rsid": "rs429358",
+      "gene": "APOE",
+      "category": "salud",
+      "importance": "alto",
+      "description": "Variante ε4 del gen APOE asociada con mayor riesgo de Alzheimer",
+      "implications": "Portadores de ε4 tienen mayor riesgo de Alzheimer. También afecta metabolismo del colesterol.",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs429358",
+      "related_conditions": ["Alzheimer", "Hipercolesterolemia"]
+    },
+    {
+      "rsid": "rs7412",
+      "gene": "APOE",
+      "category": "salud",
+      "importance": "alto",
+      "description": "Variante ε2 del gen APOE (protección contra Alzheimer)",
+      "implications": "La combinación con rs429358 determina el haplotipo APOE (ε2/ε3/ε4)",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs7412",
+      "related_conditions": ["Alzheimer"]
+    },
+    {
+      "rsid": "rs80357373",
+      "gene": "BRCA1",
+      "category": "salud",
+      "importance": "alto",
+      "description": "Variantes en BRCA1 asociadas con cáncer de mama y ovario",
+      "implications": "Portadores tienen mayor riesgo de cáncer de mama y ovario hereditario",
+      "snpedia_url": "https://www.snpedia.com/index.php/Brca1",
+      "related_conditions": ["Cáncer de mama", "Cáncer de ovario"]
+    },
+    {
+      "rsid": "rs9939609",
+      "gene": "FTO",
+      "category": "salud",
+      "importance": "medio",
+      "description": "Variante asociada con mayor riesgo de obesidad y diabetes tipo 2",
+      "implications": "Mayor predisposición a obesidad y resistencia a la insulina",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs9939609",
+      "related_conditions": ["Obesidad", "Diabetes tipo 2"]
+    },
+    {
+      "rsid": "rs7903146",
+      "gene": "TCF7L2",
+      "category": "salud",
+      "importance": "medio",
+      "description": "Variante asociada con mayor riesgo de diabetes tipo 2",
+      "implications": "Mayor riesgo de desarrollar diabetes tipo 2",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs7903146",
+      "related_conditions": ["Diabetes tipo 2"]
+    },
+    {
+      "rsid": "rs6025",
+      "gene": "F5",
+      "category": "salud",
+      "importance": "alto",
+      "description": "Factor V Leiden - mayor riesgo de trombosis venosa",
+      "implications": "Mayor riesgo de coágulos sanguíneos, especialmente en combinación con anticonceptivos orales",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs6025",
+      "related_conditions": ["Trombosis venosa", "Embolia pulmonar"]
+    },
+    {
+      "rsid": "rs4244285",
+      "gene": "CYP2C19",
+      "category": "farmacogenetica",
+      "importance": "alto",
+      "description": "CYP2C19*2 - metabolizador lento",
+      "implications": "Metaboliza lentamente clopidogrel, omeprazol, antidepresivos. Puede necesitar dosis ajustadas.",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs4244285",
+      "related_conditions": ["Metabolismo de medicamentos"]
+    },
+    {
+      "rsid": "rs4986893",
+      "gene": "CYP2C19",
+      "category": "farmacogenetica",
+      "importance": "alto",
+      "description": "CYP2C19*3 - metabolizador lento",
+      "implications": "Similar a *2, afecta metabolismo de múltiples medicamentos",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs4986893",
+      "related_conditions": ["Metabolismo de medicamentos"]
+    },
+    {
+      "rsid": "rs1065852",
+      "gene": "CYP2D6",
+      "category": "farmacogenetica",
+      "importance": "alto",
+      "description": "CYP2D6*4 - metabolizador lento",
+      "implications": "Afecta metabolismo de codeína, tramadol, antidepresivos, betabloqueadores",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs1065852",
+      "related_conditions": ["Metabolismo de medicamentos"]
+    },
+    {
+      "rsid": "rs4149056",
+      "gene": "SLCO1B1",
+      "category": "farmacogenetica",
+      "importance": "alto",
+      "description": "Mayor riesgo de miopatía con estatinas",
+      "implications": "Portadores tienen mayor riesgo de efectos secundarios musculares con simvastatina",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs4149056",
+      "related_conditions": ["Miopatía por estatinas"]
+    },
+    {
+      "rsid": "rs9923231",
+      "gene": "VKORC1",
+      "category": "farmacogenetica",
+      "importance": "alto",
+      "description": "Afecta dosis requerida de warfarina",
+      "implications": "Portadores requieren dosis más bajas de warfarina para anticoagulación",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs9923231",
+      "related_conditions": ["Anticoagulación"]
+    },
+    {
+      "rsid": "rs1801133",
+      "gene": "MTHFR",
+      "category": "nutrigenomica",
+      "importance": "alto",
+      "description": "MTHFR C677T - reduce conversión de folato",
+      "implications": "Homocigoto (TT) reduce actividad enzimática ~70%. Necesita metilfolato, no ácido fólico sintético.",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs1801133",
+      "related_conditions": ["Hiperhomocisteinemia", "Defectos del tubo neural"]
+    },
+    {
+      "rsid": "rs1801131",
+      "gene": "MTHFR",
+      "category": "nutrigenomica",
+      "importance": "medio",
+      "description": "MTHFR A1298C - reduce conversión de folato",
+      "implications": "Reduce actividad enzimática. Efecto sinérgico con C677T.",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs1801131",
+      "related_conditions": ["Hiperhomocisteinemia"]
+    },
+    {
+      "rsid": "rs1801394",
+      "gene": "MTRR",
+      "category": "nutrigenomica",
+      "importance": "alto",
+      "description": "MTRR A66G - reduce reciclaje de B12",
+      "implications": "Necesita B12 activa (metilcobalamina) y dosis más altas",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs1801394",
+      "related_conditions": ["Deficiencia de B12"]
+    },
+    {
+      "rsid": "rs1544410",
+      "gene": "VDR",
+      "category": "nutrigenomica",
+      "importance": "medio",
+      "description": "VDR BsmI - afecta receptores de vitamina D",
+      "implications": "Puede requerir niveles más altos de vitamina D para función óptima",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs1544410",
+      "related_conditions": ["Deficiencia de vitamina D"]
+    },
+    {
+      "rsid": "rs7975232",
+      "gene": "VDR",
+      "category": "nutrigenomica",
+      "importance": "medio",
+      "description": "VDR ApaI - afecta receptores de vitamina D",
+      "implications": "Similar a BsmI, afecta absorción y utilización de vitamina D",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs7975232",
+      "related_conditions": ["Deficiencia de vitamina D"]
+    },
+    {
+      "rsid": "rs731236",
+      "gene": "VDR",
+      "category": "nutrigenomica",
+      "importance": "medio",
+      "description": "VDR TaqI - afecta receptores de vitamina D",
+      "implications": "Afecta función de receptores de vitamina D",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs731236",
+      "related_conditions": ["Deficiencia de vitamina D"]
+    },
+    {
+      "rsid": "rs12934922",
+      "gene": "BCMO1",
+      "category": "nutrigenomica",
+      "importance": "medio",
+      "description": "Reduce conversión de beta-caroteno a vitamina A",
+      "implications": "Mejor obtener vitamina A directamente de fuentes animales o suplementos",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs12934922",
+      "related_conditions": ["Deficiencia de vitamina A"]
+    },
+    {
+      "rsid": "rs601338",
+      "gene": "FUT2",
+      "category": "nutrigenomica",
+      "importance": "medio",
+      "description": "No-secretor - afecta absorción de B12",
+      "implications": "Mayor riesgo de deficiencia de B12, especialmente en vegetarianos",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs601338",
+      "related_conditions": ["Deficiencia de B12"]
+    },
+    {
+      "rsid": "rs4988235",
+      "gene": "LCT",
+      "category": "nutrigenomica",
+      "importance": "medio",
+      "description": "Intolerancia a lactosa en adultos",
+      "implications": "Portadores pierden capacidad de digerir lactosa en la edad adulta",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs4988235",
+      "related_conditions": ["Intolerancia a lactosa"]
+    },
+    {
+      "rsid": "rs4680",
+      "gene": "COMT",
+      "category": "nutrigenomica",
+      "importance": "medio",
+      "description": "COMT Val158Met - velocidad de metabolismo de dopamina",
+      "implications": "GG = metabolismo rápido (mayor tolerancia al estrés, menor sensibilidad a dolor). AG/AA = metabolismo lento (mayor sensibilidad, cuidado con sobre-metilación)",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs4680",
+      "related_conditions": ["Sensibilidad al estrés", "Dolor crónico"]
+    },
+    {
+      "rsid": "rs4880",
+      "gene": "SOD2",
+      "category": "nutrigenomica",
+      "importance": "medio",
+      "description": "SOD2 Ala16Val - función antioxidante mitocondrial",
+      "implications": "GG = menor actividad antioxidante, mayor necesidad de antioxidantes",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs4880",
+      "related_conditions": ["Estrés oxidativo"]
+    },
+    {
+      "rsid": "rs2802292",
+      "gene": "FOXO3",
+      "category": "longevidad",
+      "importance": "medio",
+      "description": "Asociado con longevidad y envejecimiento saludable",
+      "implications": "Portadores de GG tienen mayor probabilidad de longevidad",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs2802292",
+      "related_conditions": ["Longevidad"]
+    },
+    {
+      "rsid": "rs5882",
+      "gene": "CETP",
+      "category": "longevidad",
+      "importance": "medio",
+      "description": "Asociado con longevidad y perfil de colesterol",
+      "implications": "GG = mayor longevidad, mejor perfil de colesterol",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs5882",
+      "related_conditions": ["Longevidad", "Colesterol"]
+    },
+    {
+      "rsid": "rs1805007",
+      "gene": "MC1R",
+      "category": "rasgos",
+      "importance": "bajo",
+      "description": "Asociado con piel clara y cabello rojo",
+      "implications": "Mayor sensibilidad al sol, mayor riesgo de quemaduras",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs1805007",
+      "related_conditions": ["Sensibilidad al sol"]
+    },
+    {
+      "rsid": "rs12913832",
+      "gene": "HERC2",
+      "category": "rasgos",
+      "importance": "bajo",
+      "description": "Asociado con color de ojos",
+      "implications": "GG = ojos marrones, AG = ojos verdes/avellana, AA = ojos azules",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs12913832",
+      "related_conditions": []
+    },
+    {
+      "rsid": "rs713598",
+      "gene": "TAS2R38",
+      "category": "rasgos",
+      "importance": "bajo",
+      "description": "Sensibilidad al sabor amargo (PROP)",
+      "implications": "GG = no siente amargo, AG = siente moderadamente, AA = siente muy amargo",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs713598",
+      "related_conditions": []
+    }
+  ]
+}
+

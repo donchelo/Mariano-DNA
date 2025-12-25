@@ -35,49 +35,52 @@ class GenomeParser:
             count = 0
             
             for line in f:
-                original_line = line
-                line = line.strip()
+                line_stripped = line.strip()
                 
-                # Buscar línea de encabezado PRIMERO (puede tener # al inicio)
-                if 'rsid' in line.lower() and ('chromosome' in line.lower() or 'chrom' in line.lower()):
+                # Saltar líneas vacías
+                if not line_stripped:
+                    continue
+                
+                # Procesar líneas de metadata (comentarios)
+                if line_stripped.startswith('#'):
+                    # Extraer metadata
+                    if ':' in line_stripped:
+                        try:
+                            key, value = line_stripped[1:].split(':', 1)
+                            self.metadata[key.strip()] = value.strip()
+                        except:
+                            pass
+                    continue
+                
+                # Detectar encabezado (línea que contiene "rsid" y "chromosome")
+                if 'rsid' in line_stripped.lower() and ('chromosome' in line_stripped.lower() or 'chrom' in line_stripped.lower()):
                     header_found = True
                     continue
                 
-                # Si no hemos encontrado el header, leer metadata
-                if not header_found:
-                    if line.startswith('#'):
-                        # Extraer metadata
-                        if ':' in line:
-                            try:
-                                key, value = line[1:].split(':', 1)
-                                self.metadata[key.strip()] = value.strip()
-                            except:
-                                pass
-                    continue
-                
-                # Saltar líneas vacías o que empiecen con #
-                if not line or line.startswith('#'):
-                    continue
-                
-                # Leer SNPs
-                parts = line.split('\t')
+                # Procesar líneas de datos (SNPs)
+                # Una línea de datos tiene al menos 4 columnas separadas por tabs
+                # y la primera columna empieza con "rs"
+                parts = line_stripped.split('\t')
                 if len(parts) >= 4:
                     rsid = parts[0].strip()
-                    chromosome = parts[1].strip()
-                    position = parts[2].strip()
-                    genotype = parts[3].strip()
                     
-                    # Solo incluir SNPs válidos (no --)
-                    if genotype and genotype != '--' and rsid.startswith('rs'):
-                        self.genome_index[rsid] = {
-                            'genotype': genotype,
-                            'chromosome': chromosome,
-                            'position': position
-                        }
-                        count += 1
+                    # Verificar que es un rsID válido
+                    if rsid.startswith('rs'):
+                        chromosome = parts[1].strip()
+                        position = parts[2].strip()
+                        genotype = parts[3].strip()
                         
-                        if count % 100000 == 0:
-                            print(f"  Procesados {count:,} SNPs...")
+                        # Solo incluir SNPs válidos (no --)
+                        if genotype and genotype != '--':
+                            self.genome_index[rsid] = {
+                                'genotype': genotype,
+                                'chromosome': chromosome,
+                                'position': position
+                            }
+                            count += 1
+                            
+                            if count % 100000 == 0:
+                                print(f"  Procesados {count:,} SNPs...")
         
         print(f"[OK] Total de SNPs indexados: {len(self.genome_index):,}")
         return self.genome_index

@@ -247,7 +247,7 @@ if __name__ == '__main__':
     
     # Rutas relativas a la raíz del proyecto
     base_dir = Path(__file__).parent.parent.parent
-    input_file = base_dir / "data" / "raw" / "reports" / "promethease" / "prometheus txt.txt"
+    input_file = base_dir / "data" / "raw" / "reportes_proveedores" / "promethease" / "prometheus txt.txt"
     output_file = base_dir / "data" / "processed" / "hallazgos_geneticos.json"
     
     # Asegurar que el directorio de salida existe
