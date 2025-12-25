@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Data
+data/raw/
+data/processed/
+*.pdf
+*.xlsx
+*.tar.gz
+*.txt
+
+# IDE
+.cursor/
+.vscode/
+
