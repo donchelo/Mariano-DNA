@@ -19,6 +19,12 @@ class SNPInfo:
     implications: str
     snpedia_url: str
     related_conditions: List[str]
+    # Campos opcionales para validación de genotipos
+    risk_allele: Optional[str] = None
+    normal_allele: Optional[str] = None
+    genotype_interpretation: Optional[Dict[str, str]] = None
+    requires_combination: bool = False
+    combination_snp: Optional[str] = None
 
 
 class SNPDatabase:
@@ -64,7 +70,12 @@ class SNPDatabase:
                     description=snp_data['description'],
                     implications=snp_data['implications'],
                     snpedia_url=snp_data['snpedia_url'],
-                    related_conditions=snp_data.get('related_conditions', [])
+                    related_conditions=snp_data.get('related_conditions', []),
+                    risk_allele=snp_data.get('risk_allele'),
+                    normal_allele=snp_data.get('normal_allele'),
+                    genotype_interpretation=snp_data.get('genotype_interpretation'),
+                    requires_combination=snp_data.get('requires_combination', False),
+                    combination_snp=snp_data.get('combination_snp')
                 )
                 self.snps[snp_info.rsid] = snp_info
             

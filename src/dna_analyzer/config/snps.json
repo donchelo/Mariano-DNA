@@ -8,7 +8,16 @@
       "description": "Variante ε4 del gen APOE asociada con mayor riesgo de Alzheimer",
       "implications": "Portadores de ε4 tienen mayor riesgo de Alzheimer. También afecta metabolismo del colesterol.",
       "snpedia_url": "https://www.snpedia.com/index.php/Rs429358",
-      "related_conditions": ["Alzheimer", "Hipercolesterolemia"]
+      "related_conditions": ["Alzheimer", "Hipercolesterolemia"],
+      "risk_allele": "C",
+      "normal_allele": "T",
+      "genotype_interpretation": {
+        "CC": "Homocigoto ε4 - Mayor riesgo de Alzheimer",
+        "CT": "Heterocigoto ε3/ε4 - Riesgo moderado de Alzheimer",
+        "TT": "Homocigoto ε3 - Genotipo normal (neutral)"
+      },
+      "requires_combination": true,
+      "combination_snp": "rs7412"
     },
     {
       "rsid": "rs7412",
@@ -18,7 +27,186 @@
       "description": "Variante ε2 del gen APOE (protección contra Alzheimer)",
       "implications": "La combinación con rs429358 determina el haplotipo APOE (ε2/ε3/ε4)",
       "snpedia_url": "https://www.snpedia.com/index.php/Rs7412",
-      "related_conditions": ["Alzheimer"]
+      "related_conditions": ["Alzheimer"],
+      "risk_allele": "T",
+      "normal_allele": "C",
+      "genotype_interpretation": {
+        "TT": "ε2 - Protección contra Alzheimer",
+        "CT": "ε3 - Genotipo normal",
+        "CC": "ε3 - Genotipo normal"
+      },
+      "requires_combination": true,
+      "combination_snp": "rs429358"
+    },
+    {
+      "rsid": "rs17646665",
+      "gene": "SORT1",
+      "category": "salud",
+      "importance": "bajo",
+      "description": "Reducción moderada del riesgo de Alzheimer (~0.6x)",
+      "implications": "El alelo menor (G) está asociado con un riesgo reducido de enfermedad de Alzheimer.",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs17646665",
+      "related_conditions": ["Alzheimer"],
+      "risk_allele": "A",
+      "normal_allele": "G",
+      "genotype_interpretation": {
+        "GG": "Homocigoto - Mayor protección contra Alzheimer",
+        "AG": "Heterocigoto - Protección moderada",
+        "AA": "Homocigoto normal - Riesgo estándar"
+      }
+    },
+    {
+      "rsid": "rs10830963",
+      "gene": "MTNR1B",
+      "category": "salud",
+      "importance": "medio",
+      "description": "Aumento del riesgo de diabetes tipo 2 y diabetes gestacional",
+      "implications": "El alelo G se asocia con mayores niveles de glucosa en ayunas y menor liberación de insulina.",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs10830963",
+      "related_conditions": ["Diabetes tipo 2"],
+      "risk_allele": "G",
+      "normal_allele": "A",
+      "genotype_interpretation": {
+        "GG": "Homocigoto - Mayor riesgo de diabetes tipo 2",
+        "AG": "Heterocigoto - Riesgo moderado",
+        "AA": "Homocigoto normal - Riesgo bajo"
+      }
+    },
+    {
+      "rsid": "rs1021737",
+      "gene": "CTH",
+      "category": "nutrigenomica",
+      "importance": "medio",
+      "description": "Niveles significativamente más altos de homocisteína en plasma",
+      "implications": "Afecta la ruta de transulfuración, incrementando la necesidad de cofactores como B6.",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs1021737",
+      "related_conditions": ["Hiperhomocisteinemia"],
+      "risk_allele": "T",
+      "normal_allele": "C",
+      "genotype_interpretation": {
+        "TT": "Homocigoto - Niveles de homocisteína elevados",
+        "CT": "Heterocigoto - Elevación moderada",
+        "CC": "Homocigoto normal"
+      }
+    },
+    {
+      "rsid": "rs7192",
+      "gene": "HLA-DRA",
+      "category": "salud",
+      "importance": "medio",
+      "description": "Mayor riesgo de desarrollar alergia al maní",
+      "implications": "Cada copia del alelo T aumenta el riesgo de alergia al maní (~1.7x).",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs7192",
+      "related_conditions": ["Alergia", "Artritis"],
+      "risk_allele": "T",
+      "normal_allele": "C",
+      "genotype_interpretation": {
+        "TT": "Homocigoto - Mayor riesgo de alergia al maní",
+        "CT": "Heterocigoto - Riesgo moderado",
+        "CC": "Homocigoto normal"
+      }
+    },
+    {
+      "rsid": "rs1800098",
+      "gene": "CFTR",
+      "category": "salud",
+      "importance": "alto",
+      "description": "Variante p.Gly576Ala asociada con fibrosis quística y CBAVD",
+      "implications": "Probablemente patogénica con penetrancia variable. Relevante para fertilidad masculina.",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs1800098",
+      "related_conditions": ["Fibrosis quística", "CBAVD", "Pancreatitis"],
+      "risk_allele": "G",
+      "normal_allele": "C",
+      "genotype_interpretation": {
+        "GG": "Homocigoto - Alto riesgo (patogénico)",
+        "CG": "Heterocigoto - Portador / Riesgo moderado",
+        "CC": "Homocigoto normal"
+      }
+    },
+    {
+      "rsid": "rs2235544",
+      "gene": "DIO1",
+      "category": "nutrigenomica",
+      "importance": "medio",
+      "description": "Reducción significativa en la conversión de T4 a T3",
+      "implications": "Puede empeorar la pérdida ósea y tener efectos cerebrales debido a niveles bajos de T3.",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs2235544",
+      "related_conditions": ["Hipotiroidismo periférico", "Salud ósea"],
+      "risk_allele": "A",
+      "normal_allele": "G",
+      "genotype_interpretation": {
+        "AA": "Homocigoto - Conversión T4->T3 reducida",
+        "AG": "Heterocigoto - Conversión moderadamente reducida",
+        "GG": "Homocigoto normal"
+      }
+    },
+    {
+      "rsid": "rs7754840",
+      "gene": "CDKAL1",
+      "category": "salud",
+      "importance": "medio",
+      "description": "Aumento de 1.3x en el riesgo de diabetes tipo 2",
+      "implications": "Afecta la secreción de insulina mediada por glucosa.",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs7754840",
+      "related_conditions": ["Diabetes tipo 2"],
+      "risk_allele": "C",
+      "normal_allele": "G",
+      "genotype_interpretation": {
+        "CC": "Homocigoto - Mayor riesgo de diabetes tipo 2",
+        "CG": "Heterocigoto - Riesgo moderado",
+        "GG": "Homocigoto normal"
+      }
+    },
+    {
+      "rsid": "rs3815148",
+      "gene": "COG5",
+      "category": "salud",
+      "importance": "medio",
+      "description": "Aumento de 1.34x en el riesgo de osteoartritis",
+      "implications": "Asociado con la degradación del cartílago en la articulación de la cadera y rodilla.",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs3815148",
+      "related_conditions": ["Osteoartritis"],
+      "risk_allele": "T",
+      "normal_allele": "C",
+      "genotype_interpretation": {
+        "TT": "Homocigoto - Mayor riesgo de osteoartritis",
+        "CT": "Heterocigoto - Riesgo moderado",
+        "CC": "Homocigoto normal"
+      }
+    },
+    {
+      "rsid": "rs17089782",
+      "gene": "PIBF1",
+      "category": "salud",
+      "importance": "bajo",
+      "description": "Portador de una mutación para el Síndrome de Joubert 33",
+      "implications": "Sin efectos en ausencia de una segunda mutación en el gen PIBF1 (recesivo).",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs17089782",
+      "related_conditions": ["Síndrome de Joubert"],
+      "risk_allele": "A",
+      "normal_allele": "G",
+      "genotype_interpretation": {
+        "AA": "Homocigoto - Riesgo de enfermedad",
+        "AG": "Heterocigoto - Portador sano",
+        "GG": "Homocigoto normal"
+      }
+    },
+    {
+      "rsid": "rs2180439",
+      "gene": "EDA2R",
+      "category": "rasgos",
+      "importance": "bajo",
+      "description": "Aumento de 2x en el riesgo de calvicie masculina",
+      "implications": "Asociado con la pérdida de cabello temprana en hombres.",
+      "snpedia_url": "https://www.snpedia.com/index.php/Rs2180439",
+      "related_conditions": ["Calvicie masculina"],
+      "risk_allele": "G",
+      "normal_allele": "A",
+      "genotype_interpretation": {
+        "GG": "Homocigoto - Mayor riesgo de calvicie",
+        "AG": "Heterocigoto - Riesgo moderado",
+        "AA": "Homocigoto normal"
+      }
     },
     {
       "rsid": "rs80357373",
@@ -38,7 +226,14 @@
       "description": "Variante asociada con mayor riesgo de obesidad y diabetes tipo 2",
       "implications": "Mayor predisposición a obesidad y resistencia a la insulina",
       "snpedia_url": "https://www.snpedia.com/index.php/Rs9939609",
-      "related_conditions": ["Obesidad", "Diabetes tipo 2"]
+      "related_conditions": ["Obesidad", "Diabetes tipo 2"],
+      "risk_allele": "A",
+      "normal_allele": "T",
+      "genotype_interpretation": {
+        "AA": "Homocigoto - Mayor riesgo de obesidad",
+        "AT": "Heterocigoto - Riesgo moderado",
+        "TT": "Homocigoto normal - Riesgo bajo"
+      }
     },
     {
       "rsid": "rs7903146",
@@ -48,7 +243,14 @@
       "description": "Variante asociada con mayor riesgo de diabetes tipo 2",
       "implications": "Mayor riesgo de desarrollar diabetes tipo 2",
       "snpedia_url": "https://www.snpedia.com/index.php/Rs7903146",
-      "related_conditions": ["Diabetes tipo 2"]
+      "related_conditions": ["Diabetes tipo 2"],
+      "risk_allele": "T",
+      "normal_allele": "C",
+      "genotype_interpretation": {
+        "TT": "Homocigoto - Mayor riesgo de diabetes tipo 2",
+        "CT": "Heterocigoto - Riesgo moderado",
+        "CC": "Homocigoto normal - Riesgo bajo"
+      }
     },
     {
       "rsid": "rs6025",
@@ -58,7 +260,14 @@
       "description": "Factor V Leiden - mayor riesgo de trombosis venosa",
       "implications": "Mayor riesgo de coágulos sanguíneos, especialmente en combinación con anticonceptivos orales",
       "snpedia_url": "https://www.snpedia.com/index.php/Rs6025",
-      "related_conditions": ["Trombosis venosa", "Embolia pulmonar"]
+      "related_conditions": ["Trombosis venosa", "Embolia pulmonar"],
+      "risk_allele": "G",
+      "normal_allele": "C",
+      "genotype_interpretation": {
+        "GG": "Homocigoto Factor V Leiden - Alto riesgo de trombosis",
+        "CG": "Heterocigoto Factor V Leiden - Riesgo moderado de trombosis",
+        "CC": "Genotipo normal - Sin riesgo aumentado"
+      }
     },
     {
       "rsid": "rs4244285",
@@ -68,7 +277,14 @@
       "description": "CYP2C19*2 - metabolizador lento",
       "implications": "Metaboliza lentamente clopidogrel, omeprazol, antidepresivos. Puede necesitar dosis ajustadas.",
       "snpedia_url": "https://www.snpedia.com/index.php/Rs4244285",
-      "related_conditions": ["Metabolismo de medicamentos"]
+      "related_conditions": ["Metabolismo de medicamentos"],
+      "risk_allele": "A",
+      "normal_allele": "G",
+      "genotype_interpretation": {
+        "AA": "Homocigoto *2/*2 - Metabolizador lento",
+        "AG": "Heterocigoto *1/*2 - Metabolizador intermedio",
+        "GG": "Homocigoto *1/*1 - Metabolizador normal"
+      }
     },
     {
       "rsid": "rs4986893",
@@ -78,7 +294,14 @@
       "description": "CYP2C19*3 - metabolizador lento",
       "implications": "Similar a *2, afecta metabolismo de múltiples medicamentos",
       "snpedia_url": "https://www.snpedia.com/index.php/Rs4986893",
-      "related_conditions": ["Metabolismo de medicamentos"]
+      "related_conditions": ["Metabolismo de medicamentos"],
+      "risk_allele": "A",
+      "normal_allele": "G",
+      "genotype_interpretation": {
+        "AA": "Homocigoto *3/*3 - Metabolizador lento",
+        "AG": "Heterocigoto *1/*3 - Metabolizador intermedio",
+        "GG": "Homocigoto *1/*1 - Metabolizador normal"
+      }
     },
     {
       "rsid": "rs1065852",
@@ -98,7 +321,14 @@
       "description": "Mayor riesgo de miopatía con estatinas",
       "implications": "Portadores tienen mayor riesgo de efectos secundarios musculares con simvastatina",
       "snpedia_url": "https://www.snpedia.com/index.php/Rs4149056",
-      "related_conditions": ["Miopatía por estatinas"]
+      "related_conditions": ["Miopatía por estatinas"],
+      "risk_allele": "C",
+      "normal_allele": "T",
+      "genotype_interpretation": {
+        "CC": "Homocigoto - Mayor riesgo de miopatía",
+        "CT": "Heterocigoto - Riesgo moderado",
+        "TT": "Homocigoto normal - Riesgo bajo"
+      }
     },
     {
       "rsid": "rs9923231",
@@ -108,7 +338,14 @@
       "description": "Afecta dosis requerida de warfarina",
       "implications": "Portadores requieren dosis más bajas de warfarina para anticoagulación",
       "snpedia_url": "https://www.snpedia.com/index.php/Rs9923231",
-      "related_conditions": ["Anticoagulación"]
+      "related_conditions": ["Anticoagulación"],
+      "risk_allele": "T",
+      "normal_allele": "C",
+      "genotype_interpretation": {
+        "TT": "Homocigoto - Requiere dosis más bajas de warfarina",
+        "CT": "Heterocigoto - Dosis intermedias",
+        "CC": "Homocigoto normal - Dosis estándar"
+      }
     },
     {
       "rsid": "rs1801133",
@@ -118,7 +355,14 @@
       "description": "MTHFR C677T - reduce conversión de folato",
       "implications": "Homocigoto (TT) reduce actividad enzimática ~70%. Necesita metilfolato, no ácido fólico sintético.",
       "snpedia_url": "https://www.snpedia.com/index.php/Rs1801133",
-      "related_conditions": ["Hiperhomocisteinemia", "Defectos del tubo neural"]
+      "related_conditions": ["Hiperhomocisteinemia", "Defectos del tubo neural"],
+      "risk_allele": "T",
+      "normal_allele": "C",
+      "genotype_interpretation": {
+        "TT": "Homocigoto - Reducción ~70% actividad enzimática",
+        "CT": "Heterocigoto - Reducción ~35% actividad enzimática",
+        "CC": "Homocigoto normal - Actividad enzimática normal"
+      }
     },
     {
       "rsid": "rs1801131",
@@ -128,7 +372,14 @@
       "description": "MTHFR A1298C - reduce conversión de folato",
       "implications": "Reduce actividad enzimática. Efecto sinérgico con C677T.",
       "snpedia_url": "https://www.snpedia.com/index.php/Rs1801131",
-      "related_conditions": ["Hiperhomocisteinemia"]
+      "related_conditions": ["Hiperhomocisteinemia"],
+      "risk_allele": "C",
+      "normal_allele": "A",
+      "genotype_interpretation": {
+        "CC": "Homocigoto - Reducción actividad enzimática",
+        "AC": "Heterocigoto - Reducción moderada",
+        "AA": "Homocigoto normal - Actividad normal"
+      }
     },
     {
       "rsid": "rs1801394",
@@ -138,7 +389,14 @@
       "description": "MTRR A66G - reduce reciclaje de B12",
       "implications": "Necesita B12 activa (metilcobalamina) y dosis más altas",
       "snpedia_url": "https://www.snpedia.com/index.php/Rs1801394",
-      "related_conditions": ["Deficiencia de B12"]
+      "related_conditions": ["Deficiencia de B12"],
+      "risk_allele": "G",
+      "normal_allele": "A",
+      "genotype_interpretation": {
+        "GG": "Homocigoto - Mayor necesidad de B12 activa",
+        "AG": "Heterocigoto - Necesidad moderada",
+        "AA": "Homocigoto normal - Función normal"
+      }
     },
     {
       "rsid": "rs1544410",
@@ -188,7 +446,14 @@
       "description": "No-secretor - afecta absorción de B12",
       "implications": "Mayor riesgo de deficiencia de B12, especialmente en vegetarianos",
       "snpedia_url": "https://www.snpedia.com/index.php/Rs601338",
-      "related_conditions": ["Deficiencia de B12"]
+      "related_conditions": ["Deficiencia de B12"],
+      "risk_allele": "A",
+      "normal_allele": "G",
+      "genotype_interpretation": {
+        "AA": "No-secretor - Mayor riesgo de deficiencia B12",
+        "AG": "Secretor parcial",
+        "GG": "Secretor - Función normal"
+      }
     },
     {
       "rsid": "rs4988235",
@@ -198,7 +463,14 @@
       "description": "Intolerancia a lactosa en adultos",
       "implications": "Portadores pierden capacidad de digerir lactosa en la edad adulta",
       "snpedia_url": "https://www.snpedia.com/index.php/Rs4988235",
-      "related_conditions": ["Intolerancia a lactosa"]
+      "related_conditions": ["Intolerancia a lactosa"],
+      "risk_allele": "A",
+      "normal_allele": "G",
+      "genotype_interpretation": {
+        "AA": "Intolerancia a lactosa en adultos",
+        "AG": "Tolerancia parcial",
+        "GG": "Tolerancia a lactosa"
+      }
     },
     {
       "rsid": "rs4680",
@@ -208,7 +480,14 @@
       "description": "COMT Val158Met - velocidad de metabolismo de dopamina",
       "implications": "GG = metabolismo rápido (mayor tolerancia al estrés, menor sensibilidad a dolor). AG/AA = metabolismo lento (mayor sensibilidad, cuidado con sobre-metilación)",
       "snpedia_url": "https://www.snpedia.com/index.php/Rs4680",
-      "related_conditions": ["Sensibilidad al estrés", "Dolor crónico"]
+      "related_conditions": ["Sensibilidad al estrés", "Dolor crónico"],
+      "risk_allele": "A",
+      "normal_allele": "G",
+      "genotype_interpretation": {
+        "AA": "Metabolismo lento - Mayor sensibilidad",
+        "AG": "Metabolismo intermedio",
+        "GG": "Metabolismo rápido - Mayor tolerancia al estrés"
+      }
     },
     {
       "rsid": "rs4880",
@@ -218,7 +497,14 @@
       "description": "SOD2 Ala16Val - función antioxidante mitocondrial",
       "implications": "GG = menor actividad antioxidante, mayor necesidad de antioxidantes",
       "snpedia_url": "https://www.snpedia.com/index.php/Rs4880",
-      "related_conditions": ["Estrés oxidativo"]
+      "related_conditions": ["Estrés oxidativo"],
+      "risk_allele": "G",
+      "normal_allele": "C",
+      "genotype_interpretation": {
+        "GG": "Menor actividad antioxidante",
+        "CG": "Actividad intermedia",
+        "CC": "Mayor actividad antioxidante"
+      }
     },
     {
       "rsid": "rs2802292",
@@ -228,7 +514,14 @@
       "description": "Asociado con longevidad y envejecimiento saludable",
       "implications": "Portadores de GG tienen mayor probabilidad de longevidad",
       "snpedia_url": "https://www.snpedia.com/index.php/Rs2802292",
-      "related_conditions": ["Longevidad"]
+      "related_conditions": ["Longevidad"],
+      "risk_allele": "T",
+      "normal_allele": "G",
+      "genotype_interpretation": {
+        "TT": "Menor probabilidad de longevidad",
+        "GT": "Probabilidad intermedia",
+        "GG": "Mayor probabilidad de longevidad"
+      }
     },
     {
       "rsid": "rs5882",
@@ -238,7 +531,14 @@
       "description": "Asociado con longevidad y perfil de colesterol",
       "implications": "GG = mayor longevidad, mejor perfil de colesterol",
       "snpedia_url": "https://www.snpedia.com/index.php/Rs5882",
-      "related_conditions": ["Longevidad", "Colesterol"]
+      "related_conditions": ["Longevidad", "Colesterol"],
+      "risk_allele": "A",
+      "normal_allele": "G",
+      "genotype_interpretation": {
+        "AA": "Menor longevidad",
+        "AG": "Longevidad intermedia",
+        "GG": "Mayor longevidad, mejor perfil de colesterol"
+      }
     },
     {
       "rsid": "rs1805007",
@@ -272,4 +572,3 @@
     }
   ]
 }
-

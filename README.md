@@ -101,11 +101,19 @@ Este módulo permite automatizar el cruce de información genética y la generac
 #### Scripts de Ejecución (`src/scripts/`)
 
 *   **`run_analysis.py`**: Script principal que ejecuta el flujo completo de análisis genético:
+    - Descubre automáticamente archivos de genoma y reportes
     - Parsea el archivo de genoma raw (formato 23andMe)
-    - Extrae información de reportes PDF existentes (Genetic Genie, NutraHacker)
+    - Extrae información de reportes PDF existentes (Genetic Genie, NutraHacker, FoundMyFitness, Epigenéticos)
     - Carga datos estructurados de Promethease (JSON o HTML)
     - Cruza información con la base de datos de SNPs importantes
     - Genera reporte consolidado en Markdown
+    - Crea snapshot JSON para comparaciones históricas
+
+*   **`compare_analysis.py`**: Script para comparar análisis genéticos históricos:
+    - Compara snapshots JSON de diferentes ejecuciones
+    - Identifica hallazgos nuevos, modificados o removidos
+    - Muestra cambios en estadísticas y datos epigenéticos
+    - Útil para rastrear actualizaciones en la base de datos de SNPs
 
 *   **`parse_genetic_data.py`**: Script auxiliar para convertir reportes de texto de Promethease a JSON estructurado, facilitando el procesamiento posterior.
 
@@ -142,11 +150,23 @@ Este módulo permite automatizar el cruce de información genética y la generac
    ```bash
    python src/scripts/run_analysis.py
    ```
-   Este script procesará:
-   - El archivo de genoma raw
-   - Reportes PDF de Genetic Genie y NutraHacker (si están disponibles)
+   Este script procesará automáticamente:
+   - El archivo de genoma raw (lo encuentra automáticamente)
+   - Reportes PDF de Genetic Genie, NutraHacker, FoundMyFitness (los descubre automáticamente)
    - Datos de Promethease (JSON o HTML)
-   - Generará un reporte consolidado
+   - Reportes epigenéticos (WellMultiD, TruDiagnostic, etc.)
+   - Generará un reporte consolidado en Markdown
+   - Creará un snapshot JSON para comparaciones históricas
+
+4. **Comparar análisis históricos:**
+   ```bash
+   python src/scripts/compare_analysis.py
+   ```
+   Este script compara los snapshots más recientes y muestra:
+   - Hallazgos nuevos desde el último análisis
+   - Hallazgos modificados (cambios en genotipo, importancia, etc.)
+   - Cambios en estadísticas
+   - Cambios en datos epigenéticos
 
 4. **Revisar resultados:**
    - El reporte principal se genera en `outputs/analisis/hallazgos_geneticos_completos.md`

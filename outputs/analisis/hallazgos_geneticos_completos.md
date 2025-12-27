@@ -1,5 +1,5 @@
 # Reporte de Hallazgos Genéticos Completos
-**Generado el:** 2025-12-25 18:02:29
+**Generado el:** 2025-12-26 19:24:33
 
 ---
 
@@ -17,77 +17,159 @@ Si encuentras hallazgos preocupantes, consulta con un:
 
 ## 📊 Resumen Ejecutivo
 
-- **Total de hallazgos importantes:** 26
-- **Hallazgos encontrados en genoma:** 25
+- **Total de hallazgos importantes:** 31
+- **Hallazgos encontrados en genoma:** 30
 - **Hallazgos solo en reportes:** 1
 
 ### Hallazgos por Categoría
 
-- **Farmacogenética:** 5
-- **Longevidad:** 2
-- **Nutrigenómica:** 11
-- **Rasgos Heredados:** 3
-- **Riesgos de Salud:** 5
+- **Farmacogenética:** 3
+- **Longevidad:** 1
+- **Nutrigenómica:** 12
+- **Rasgos Heredados:** 4
+- **Riesgos de Salud:** 11
 
 ### Hallazgos por Importancia
 
-- **🔴 Alta:** 9
-- **🟡 Media:** 14
-- **🟢 Baja:** 3
+- **🔴 Alta:** 3
+- **🟡 Media:** 9
+- **🟢 Baja:** 19
 
 ---
 
 ## Riesgos de Salud
 
-### 🔴 rs429358 - APOE
+### 🔴 rs10830963 - MTNR1B
+
+- **Genotipo:** `GG`
+- **Encontrado en reportes:** promethease, foundmyfitness
+- **Magnitud:** 3.1
+- **Reputación:** ⚠️ Bad
+- **Frecuencia poblacional:** 4.6%
+- **Ubicación:** Cromosoma 11, posición 92975544
+- **Genes:** MTNR1B
+- **Publicaciones:** 73
+
+**Resumen:** increased type-2 diabetes risk; higher gestational diabetes risk
+
+**Descripción:** increased type-2 diabetes risk; higher gestational diabetes risk. Aumento del riesgo de diabetes tipo 2 y diabetes gestacional
+
+**Implicaciones:** Homocigoto - Mayor riesgo de diabetes tipo 2. El alelo G se asocia con mayores niveles de glucosa en ayunas y menor liberación de insulina.
+
+**Condiciones relacionadas:**
+- Diabetes
+- Diabetes tipo 2
+- diabetes
+
+**Temas relacionados:**
+Micronutrient, Metabolism, Pregnancy, Medical, Conditions, Gestational, diabetes, Type-2, diabetes
+
+**Más información:** [rs10830963 en SNPedia](https://www.snpedia.com/index.php/Rs10830963)
+
+---
+
+### 🔴 rs7192 - HLA-DRA
 
 - **Genotipo:** `TT`
-- **Encontrado en reportes:** foundmyfitness
-- **Genes:** APOE
+- **Encontrado en reportes:** promethease
+- **Magnitud:** 3.0
+- **Reputación:** ⚠️ Bad
+- **Frecuencia poblacional:** 12.5%
+- **Ubicación:** Cromosoma 6, posición 32443869
+- **Genes:** HLA-DRA
+- **Publicaciones:** 12
 
-**Descripción:** Variante ε4 del gen APOE asociada con mayor riesgo de Alzheimer
+**Resumen:** 3x higher risk for developing a peanut allergy In populations of European ancestry, each copy of a rs7192(T) allele is reported to increase risk for developing a peanut allergy by 1.7x.
 
-**Implicaciones:** Portadores de ε4 tienen mayor riesgo de Alzheimer. También afecta metabolismo del colesterol.
+**Descripción:** 3x higher risk for developing a peanut allergy In populations of European ancestry, each copy of a rs7192(T) allele is reported to increase risk for developing a peanut allergy by 1.7x.. Mayor riesgo de desarrollar alergia al maní
+
+**Implicaciones:** Homocigoto - Mayor riesgo de alergia al maní. Cada copia del alelo T aumenta el riesgo de alergia al maní (~1.7x).
 
 **Condiciones relacionadas:**
-- Alzheimer
-- Hipercolesterolemia
+- Alergia
+- Allergy
+- Arthritis
+- Artritis
 
-**Más información:** [rs429358 en SNPedia](https://www.snpedia.com/index.php/Rs429358)
+**Más información:** [rs7192 en SNPedia](https://www.snpedia.com/index.php/Rs7192)
 
 ---
 
-### 🔴 rs7412 - APOE
+### 🟡 rs1800098 - CFTR
 
-- **Genotipo:** `CC`
-- **Encontrado en reportes:** foundmyfitness
-- **Genes:** APOE
+- **Genotipo:** `CG`
+- **Encontrado en reportes:** promethease
+- **Magnitud:** 3.0
+- **Reputación:** ⚠️ Bad
+- **Ubicación:** Cromosoma 7, posición 117590400
+- **Genes:** CFTR
+- **Publicaciones:** 7
 
-**Descripción:** Variante ε2 del gen APOE (protección contra Alzheimer)
+**Resumen:** [OMIM:VAS DEFERENS, CONGENITAL BILATERAL ABSENCE OF]
 
-**Implicaciones:** La combinación con rs429358 determina el haplotipo APOE (ε2/ε3/ε4)
+**Descripción:** [OMIM:VAS DEFERENS, CONGENITAL BILATERAL ABSENCE OF]. Variante p.Gly576Ala asociada con fibrosis quística y CBAVD
+
+**Implicaciones:** Heterocigoto - Portador / Riesgo moderado. Probablemente patogénica con penetrancia variable. Relevante para fertilidad masculina.
 
 **Condiciones relacionadas:**
-- Alzheimer
+- CBAVD
+- Fibrosis quística
+- Pancreatitis
 
-**Más información:** [rs7412 en SNPedia](https://www.snpedia.com/index.php/Rs7412)
+**Más información:** [rs1800098 en SNPedia](https://www.snpedia.com/index.php/Rs1800098)
 
 ---
 
-### 🔴 rs6025 - F5
+### 🟡 rs7754840 - CDKAL1
 
-- **Genotipo:** `CC`
-- **Genes:** F5
+- **Genotipo:** `CG`
+- **Encontrado en reportes:** promethease
+- **Magnitud:** 3.0
+- **Reputación:** ⚠️ Bad
+- **Frecuencia poblacional:** 47.8%
+- **Ubicación:** Cromosoma 6, posición 20661019
+- **Genes:** CDKAL1
+- **Publicaciones:** 74
 
-**Descripción:** Factor V Leiden - mayor riesgo de trombosis venosa
+**Resumen:** 1.3x increased risk for type-2 diabetes
 
-**Implicaciones:** Mayor riesgo de coágulos sanguíneos, especialmente en combinación con anticonceptivos orales
+**Descripción:** 1.3x increased risk for type-2 diabetes. Aumento de 1.3x en el riesgo de diabetes tipo 2
+
+**Implicaciones:** Heterocigoto - Riesgo moderado. Afecta la secreción de insulina mediada por glucosa.
 
 **Condiciones relacionadas:**
-- Embolia pulmonar
-- Trombosis venosa
+- Diabetes
+- Diabetes tipo 2
+- diabetes
 
-**Más información:** [rs6025 en SNPedia](https://www.snpedia.com/index.php/Rs6025)
+**Temas relacionados:**
+Coriell, Personalized, Medicine, Collaborative, Pregnancy, Medical, Conditions, Gestational, diabetes, Type-2
+
+**Más información:** [rs7754840 en SNPedia](https://www.snpedia.com/index.php/Rs7754840)
+
+---
+
+### 🟡 rs17089782 - PIBF1
+
+- **Genotipo:** `AG`
+- **Encontrado en reportes:** promethease
+- **Magnitud:** 3.0
+- **Reputación:** ⚠️ Bad
+- **Frecuencia poblacional:** 1.9%
+- **Ubicación:** Cromosoma 13, posición 72835359
+- **Genes:** PIBF1
+
+**Resumen:** Carrier of a Joubert syndrome 33 mutation Unaffected in absence of a second PIBF1 gene mutation
+
+**Descripción:** Carrier of a Joubert syndrome 33 mutation Unaffected in absence of a second PIBF1 gene mutation. Portador de una mutación para el Síndrome de Joubert 33
+
+**Implicaciones:** Heterocigoto - Portador sano. Sin efectos en ausencia de una segunda mutación en el gen PIBF1 (recesivo).
+
+**Condiciones relacionadas:**
+- Syndrome
+- Síndrome de Joubert
+
+**Más información:** [rs17089782 en SNPedia](https://www.snpedia.com/index.php/Rs17089782)
 
 ---
 
@@ -99,7 +181,7 @@ Si encuentras hallazgos preocupantes, consulta con un:
 
 **Descripción:** Variante asociada con mayor riesgo de obesidad y diabetes tipo 2
 
-**Implicaciones:** Mayor predisposición a obesidad y resistencia a la insulina
+**Implicaciones:** Heterocigoto - Riesgo moderado. Mayor predisposición a obesidad y resistencia a la insulina
 
 **Condiciones relacionadas:**
 - Diabetes tipo 2
@@ -109,7 +191,96 @@ Si encuentras hallazgos preocupantes, consulta con un:
 
 ---
 
-### 🟡 rs7903146 - TCF7L2
+### 🟢 rs429358 - APOE
+
+- **Genotipo:** `TT`
+- **Encontrado en reportes:** foundmyfitness
+- **Genes:** APOE
+
+**Descripción:** Variante ε4 del gen APOE asociada con mayor riesgo de Alzheimer
+
+**Implicaciones:** APOE ε3/ε3 (genotipo normal). Portadores de ε4 tienen mayor riesgo de Alzheimer. También afecta metabolismo del colesterol.
+
+**Condiciones relacionadas:**
+- Alzheimer
+- Hipercolesterolemia
+
+**Más información:** [rs429358 en SNPedia](https://www.snpedia.com/index.php/Rs429358)
+
+---
+
+### 🟢 rs7412 - APOE
+
+- **Genotipo:** `CC`
+- **Encontrado en reportes:** foundmyfitness
+- **Genes:** APOE
+
+**Descripción:** Variante ε2 del gen APOE (protección contra Alzheimer)
+
+**Implicaciones:** Procesado en combinación con rs429358. La combinación con rs429358 determina el haplotipo APOE (ε2/ε3/ε4)
+
+**Condiciones relacionadas:**
+- Alzheimer
+
+**Más información:** [rs7412 en SNPedia](https://www.snpedia.com/index.php/Rs7412)
+
+---
+
+### 🟢 rs17646665 - SORT1
+
+- **Genotipo:** `AG`
+- **Encontrado en reportes:** promethease
+- **Magnitud:** 3.9
+- **Magnitud máxima:** 4.2
+- **Reputación:** ✅ Good
+- **Frecuencia poblacional:** 11.5%
+- **Ubicación:** Cromosoma 1, posición 109369429
+- **Genes:** SORT1
+- **Publicaciones:** 1
+
+**Resumen:** Moderately reduced risk for Alzheimer's (~0.6x) see link via main rs-page
+
+**Descripción:** Moderately reduced risk for Alzheimer's (~0.6x) see link via main rs-page. Reducción moderada del riesgo de Alzheimer (~0.6x)
+
+**Implicaciones:** Heterocigoto - Protección moderada. El alelo menor (G) está asociado con un riesgo reducido de enfermedad de Alzheimer.
+
+**Condiciones relacionadas:**
+- Alzheimer
+- Disease
+
+**Más información:** [rs17646665 en SNPedia](https://www.snpedia.com/index.php/Rs17646665)
+
+---
+
+### 🟢 rs3815148 - COG5
+
+- **Genotipo:** `CC`
+- **Encontrado en reportes:** promethease
+- **Magnitud:** 3.0
+- **Reputación:** ⚠️ Bad
+- **Frecuencia poblacional:** 4.4%
+- **Ubicación:** Cromosoma 7, posición 107297975
+- **Genes:** COG5
+- **Publicaciones:** 2
+
+**Resumen:** 1.34x increased risk of Osteoarthritis Osteoarthritis
+
+**Descripción:** 1.34x increased risk of Osteoarthritis Osteoarthritis. Aumento de 1.34x en el riesgo de osteoartritis
+
+**Implicaciones:** Homocigoto normal. Asociado con la degradación del cartílago en la articulación de la cadera y rodilla.
+
+**Condiciones relacionadas:**
+- Osteoarthritis
+- Osteoartritis
+
+**Temas relacionados:**
+Coriell, Personalized, Medicine, Collaborative
+
+**Más información:** [rs3815148 en SNPedia](https://www.snpedia.com/index.php/Rs3815148)
+
+---
+
+### 🟢 rs7903146 - TCF7L2
 
 - **Genotipo:** `CC`
 - **Encontrado en reportes:** foundmyfitness
@@ -117,7 +288,7 @@ Si encuentras hallazgos preocupantes, consulta con un:
 
 **Descripción:** Variante asociada con mayor riesgo de diabetes tipo 2
 
-**Implicaciones:** Mayor riesgo de desarrollar diabetes tipo 2
+**Implicaciones:** Homocigoto normal - Riesgo bajo. Mayor riesgo de desarrollar diabetes tipo 2
 
 **Condiciones relacionadas:**
 - Diabetes tipo 2
@@ -130,39 +301,24 @@ Si encuentras hallazgos preocupantes, consulta con un:
 
 ## Farmacogenética
 
-### 🔴 rs4244285 - CYP2C19
+### 🟡 rs4149056 - SLCO1B1
 
-- **Genotipo:** `GG`
-- **Genes:** CYP2C19
+- **Genotipo:** `CT`
+- **Encontrado en reportes:** foundmyfitness
+- **Genes:** SLCO1B1
 
-**Descripción:** CYP2C19*2 - metabolizador lento
+**Descripción:** Mayor riesgo de miopatía con estatinas
 
-**Implicaciones:** Metaboliza lentamente clopidogrel, omeprazol, antidepresivos. Puede necesitar dosis ajustadas.
+**Implicaciones:** Heterocigoto - Riesgo moderado. Portadores tienen mayor riesgo de efectos secundarios musculares con simvastatina
 
 **Condiciones relacionadas:**
-- Metabolismo de medicamentos
+- Miopatía por estatinas
 
-**Más información:** [rs4244285 en SNPedia](https://www.snpedia.com/index.php/Rs4244285)
+**Más información:** [rs4149056 en SNPedia](https://www.snpedia.com/index.php/Rs4149056)
 
 ---
 
-### 🔴 rs4986893 - CYP2C19
-
-- **Genotipo:** `GG`
-- **Genes:** CYP2C19
-
-**Descripción:** CYP2C19*3 - metabolizador lento
-
-**Implicaciones:** Similar a *2, afecta metabolismo de múltiples medicamentos
-
-**Condiciones relacionadas:**
-- Metabolismo de medicamentos
-
-**Más información:** [rs4986893 en SNPedia](https://www.snpedia.com/index.php/Rs4986893)
-
----
-
-### 🔴 rs1065852 - CYP2D6
+### 🟢 rs1065852 - CYP2D6
 
 - **Genotipo:** No encontrado en genoma raw
 - **Encontrado en reportes:** genetic_genie
@@ -179,24 +335,7 @@ Si encuentras hallazgos preocupantes, consulta con un:
 
 ---
 
-### 🔴 rs4149056 - SLCO1B1
-
-- **Genotipo:** `CT`
-- **Encontrado en reportes:** foundmyfitness
-- **Genes:** SLCO1B1
-
-**Descripción:** Mayor riesgo de miopatía con estatinas
-
-**Implicaciones:** Portadores tienen mayor riesgo de efectos secundarios musculares con simvastatina
-
-**Condiciones relacionadas:**
-- Miopatía por estatinas
-
-**Más información:** [rs4149056 en SNPedia](https://www.snpedia.com/index.php/Rs4149056)
-
----
-
-### 🔴 rs9923231 - VKORC1
+### 🟢 rs9923231 - VKORC1
 
 - **Genotipo:** `CT`
 - **Encontrado en reportes:** foundmyfitness
@@ -204,7 +343,7 @@ Si encuentras hallazgos preocupantes, consulta con un:
 
 **Descripción:** Afecta dosis requerida de warfarina
 
-**Implicaciones:** Portadores requieren dosis más bajas de warfarina para anticoagulación
+**Implicaciones:** Heterocigoto - Dosis intermedias. Portadores requieren dosis más bajas de warfarina para anticoagulación
 
 **Condiciones relacionadas:**
 - Anticoagulación
@@ -217,24 +356,7 @@ Si encuentras hallazgos preocupantes, consulta con un:
 
 ## Nutrigenómica
 
-### 🔴 rs1801394 - MTRR
-
-- **Genotipo:** `AG`
-- **Encontrado en reportes:** genetic_genie, nutrahacker, foundmyfitness
-- **Genes:** MTRR
-
-**Descripción:** MTRR A66G - reduce reciclaje de B12
-
-**Implicaciones:** Necesita B12 activa (metilcobalamina) y dosis más altas
-
-**Condiciones relacionadas:**
-- Deficiencia de B12
-
-**Más información:** [rs1801394 en SNPedia](https://www.snpedia.com/index.php/Rs1801394)
-
----
-
-### 🟡 rs1801133 - MTHFR
+### 🔴 rs1801133 - MTHFR
 
 - **Genotipo:** `AA`
 - **Encontrado en reportes:** promethease, genetic_genie, nutrahacker, foundmyfitness
@@ -249,7 +371,7 @@ Si encuentras hallazgos preocupantes, consulta con un:
 
 **Descripción:** • 15% of Hispanic Americans. MTHFR C677T - reduce conversión de folato
 
-**Implicaciones:** Homocigoto (TT) reduce actividad enzimática ~70%. Necesita metilfolato, no ácido fólico sintético.
+**Implicaciones:** Homocigoto - Reducción ~70% actividad enzimática. Homocigoto (TT) reduce actividad enzimática ~70%. Necesita metilfolato, no ácido fólico sintético.
 
 **Condiciones relacionadas:**
 - Atherosclerosis
@@ -286,87 +408,57 @@ Drugbank, Folate, GeneTest, SNPs, on, Arrays, Kelly, Nutrinomica, NutraHacker, S
 
 ---
 
-### 🟡 rs1801131 - MTHFR
+### 🟡 rs1021737 - CTH
 
 - **Genotipo:** `TT`
-- **Encontrado en reportes:** genetic_genie, foundmyfitness
-- **Genes:** MTHFR
+- **Encontrado en reportes:** promethease
+- **Magnitud:** 3.0
+- **Reputación:** ⚠️ Bad
+- **Frecuencia poblacional:** 7.1%
+- **Ubicación:** Cromosoma 1, posición 70439117
+- **Genes:** CTH
+- **Publicaciones:** 4
 
-**Descripción:** MTHFR A1298C - reduce conversión de folato
+**Resumen:** significantly higher plasma total homocysteine concentration
 
-**Implicaciones:** Reduce actividad enzimática. Efecto sinérgico con C677T.
+**Descripción:** significantly higher plasma total homocysteine concentration. Niveles significativamente más altos de homocisteína en plasma
+
+**Implicaciones:** Homocigoto - Niveles de homocisteína elevados. Afecta la ruta de transulfuración, incrementando la necesidad de cofactores como B6.
 
 **Condiciones relacionadas:**
 - Hiperhomocisteinemia
+- Homocysteine
 
-**Más información:** [rs1801131 en SNPedia](https://www.snpedia.com/index.php/Rs1801131)
-
----
-
-### 🟡 rs1544410 - VDR
-
-- **Genotipo:** `CC`
-- **Encontrado en reportes:** genetic_genie
-- **Genes:** VDR
-
-**Descripción:** VDR BsmI - afecta receptores de vitamina D
-
-**Implicaciones:** Puede requerir niveles más altos de vitamina D para función óptima
-
-**Condiciones relacionadas:**
-- Deficiencia de vitamina D
-
-**Más información:** [rs1544410 en SNPedia](https://www.snpedia.com/index.php/Rs1544410)
+**Más información:** [rs1021737 en SNPedia](https://www.snpedia.com/index.php/Rs1021737)
 
 ---
 
-### 🟡 rs7975232 - VDR
-
-- **Genotipo:** `CC`
-- **Genes:** VDR
-
-**Descripción:** VDR ApaI - afecta receptores de vitamina D
-
-**Implicaciones:** Similar a BsmI, afecta absorción y utilización de vitamina D
-
-**Condiciones relacionadas:**
-- Deficiencia de vitamina D
-
-**Más información:** [rs7975232 en SNPedia](https://www.snpedia.com/index.php/Rs7975232)
-
----
-
-### 🟡 rs731236 - VDR
+### 🟡 rs2235544 - DIO1
 
 - **Genotipo:** `AA`
-- **Encontrado en reportes:** genetic_genie
-- **Genes:** VDR
+- **Encontrado en reportes:** promethease
+- **Magnitud:** 3.0
+- **Reputación:** ⚠️ Bad
+- **Frecuencia poblacional:** 31%
+- **Ubicación:** Cromosoma 1, posición 53909897
+- **Genes:** DIO1
+- **Publicaciones:** 8
 
-**Descripción:** VDR TaqI - afecta receptores de vitamina D
+**Resumen:** Risk of significantly decreased T4-T3 thyroid conversion, may worsen bone loss, brain effects see text at rs2235544
 
-**Implicaciones:** Afecta función de receptores de vitamina D
+**Descripción:** Risk of significantly decreased T4-T3 thyroid conversion, may worsen bone loss, brain effects see text at rs2235544. Reducción significativa en la conversión de T4 a T3
 
-**Condiciones relacionadas:**
-- Deficiencia de vitamina D
-
-**Más información:** [rs731236 en SNPedia](https://www.snpedia.com/index.php/Rs731236)
-
----
-
-### 🟡 rs12934922 - BCMO1
-
-- **Genotipo:** `AA`
-- **Encontrado en reportes:** foundmyfitness
-- **Genes:** BCMO1
-
-**Descripción:** Reduce conversión de beta-caroteno a vitamina A
-
-**Implicaciones:** Mejor obtener vitamina A directamente de fuentes animales o suplementos
+**Implicaciones:** Homocigoto - Conversión T4->T3 reducida. Puede empeorar la pérdida ósea y tener efectos cerebrales debido a niveles bajos de T3.
 
 **Condiciones relacionadas:**
-- Deficiencia de vitamina A
+- Hipotiroidismo periférico
+- Salud ósea
+- Thyroid
 
-**Más información:** [rs12934922 en SNPedia](https://www.snpedia.com/index.php/Rs12934922)
+**Temas relacionados:**
+PharmGKB
+
+**Más información:** [rs2235544 en SNPedia](https://www.snpedia.com/index.php/Rs2235544)
 
 ---
 
@@ -385,7 +477,7 @@ Drugbank, Folate, GeneTest, SNPs, on, Arrays, Kelly, Nutrinomica, NutraHacker, S
 
 **Descripción:** resistance to Norovirus infection This genotype confers genetic immunity to infection by the Norwalk norovirus, a major (and contagious) cause of acute gastroenteritis worldwide.. No-secretor - afecta absorción de B12
 
-**Implicaciones:** Mayor riesgo de deficiencia de B12, especialmente en vegetarianos
+**Implicaciones:** No-secretor - Mayor riesgo de deficiencia B12. Mayor riesgo de deficiencia de B12, especialmente en vegetarianos
 
 **Condiciones relacionadas:**
 - Deficiencia de B12
@@ -394,7 +486,92 @@ Drugbank, Folate, GeneTest, SNPs, on, Arrays, Kelly, Nutrinomica, NutraHacker, S
 
 ---
 
-### 🟡 rs4988235 - LCT
+### 🟢 rs1801131 - MTHFR
+
+- **Genotipo:** `TT`
+- **Encontrado en reportes:** genetic_genie, foundmyfitness
+- **Genes:** MTHFR
+
+**Descripción:** MTHFR A1298C - reduce conversión de folato
+
+**Implicaciones:** Homocigoto normal - Actividad normal. Reduce actividad enzimática. Efecto sinérgico con C677T.
+
+**Condiciones relacionadas:**
+- Hiperhomocisteinemia
+
+**Más información:** [rs1801131 en SNPedia](https://www.snpedia.com/index.php/Rs1801131)
+
+---
+
+### 🟢 rs1801394 - MTRR
+
+- **Genotipo:** `AG`
+- **Encontrado en reportes:** genetic_genie, nutrahacker, foundmyfitness
+- **Genes:** MTRR
+
+**Descripción:** MTRR A66G - reduce reciclaje de B12
+
+**Implicaciones:** Heterocigoto - Necesidad moderada. Necesita B12 activa (metilcobalamina) y dosis más altas
+
+**Condiciones relacionadas:**
+- Deficiencia de B12
+
+**Más información:** [rs1801394 en SNPedia](https://www.snpedia.com/index.php/Rs1801394)
+
+---
+
+### 🟢 rs1544410 - VDR
+
+- **Genotipo:** `CC`
+- **Encontrado en reportes:** genetic_genie
+- **Genes:** VDR
+
+**Descripción:** VDR BsmI - afecta receptores de vitamina D
+
+**Implicaciones:** Genotipo normal (sin alelo de riesgo). Puede requerir niveles más altos de vitamina D para función óptima
+
+**Condiciones relacionadas:**
+- Deficiencia de vitamina D
+
+**Más información:** [rs1544410 en SNPedia](https://www.snpedia.com/index.php/Rs1544410)
+
+---
+
+### 🟢 rs731236 - VDR
+
+- **Genotipo:** `AA`
+- **Encontrado en reportes:** genetic_genie
+- **Genes:** VDR
+
+**Descripción:** VDR TaqI - afecta receptores de vitamina D
+
+**Implicaciones:** Genotipo normal (sin alelo de riesgo). Afecta función de receptores de vitamina D
+
+**Condiciones relacionadas:**
+- Deficiencia de vitamina D
+
+**Más información:** [rs731236 en SNPedia](https://www.snpedia.com/index.php/Rs731236)
+
+---
+
+### 🟢 rs12934922 - BCMO1
+
+- **Genotipo:** `AA`
+- **Encontrado en reportes:** foundmyfitness
+- **Genes:** BCMO1
+
+**Descripción:** Reduce conversión de beta-caroteno a vitamina A
+
+**Implicaciones:** Genotipo normal (sin alelo de riesgo). Mejor obtener vitamina A directamente de fuentes animales o suplementos
+
+**Condiciones relacionadas:**
+- Deficiencia de vitamina A
+
+**Más información:** [rs12934922 en SNPedia](https://www.snpedia.com/index.php/Rs12934922)
+
+---
+
+### 🟢 rs4988235 - LCT
 
 - **Genotipo:** `AG`
 - **Encontrado en reportes:** foundmyfitness
@@ -402,7 +579,7 @@ Drugbank, Folate, GeneTest, SNPs, on, Arrays, Kelly, Nutrinomica, NutraHacker, S
 
 **Descripción:** Intolerancia a lactosa en adultos
 
-**Implicaciones:** Portadores pierden capacidad de digerir lactosa en la edad adulta
+**Implicaciones:** Tolerancia parcial. Portadores pierden capacidad de digerir lactosa en la edad adulta
 
 **Condiciones relacionadas:**
 - Intolerancia a lactosa
@@ -411,7 +588,7 @@ Drugbank, Folate, GeneTest, SNPs, on, Arrays, Kelly, Nutrinomica, NutraHacker, S
 
 ---
 
-### 🟡 rs4680 - COMT
+### 🟢 rs4680 - COMT
 
 - **Genotipo:** `GG`
 - **Encontrado en reportes:** genetic_genie, foundmyfitness
@@ -419,7 +596,7 @@ Drugbank, Folate, GeneTest, SNPs, on, Arrays, Kelly, Nutrinomica, NutraHacker, S
 
 **Descripción:** COMT Val158Met - velocidad de metabolismo de dopamina
 
-**Implicaciones:** GG = metabolismo rápido (mayor tolerancia al estrés, menor sensibilidad a dolor). AG/AA = metabolismo lento (mayor sensibilidad, cuidado con sobre-metilación)
+**Implicaciones:** Metabolismo rápido - Mayor tolerancia al estrés. GG = metabolismo rápido (mayor tolerancia al estrés, menor sensibilidad a dolor). AG/AA = metabolismo lento (mayor sensibilidad, cuidado con sobre-metilación)
 
 **Condiciones relacionadas:**
 - Dolor crónico
@@ -429,7 +606,7 @@ Drugbank, Folate, GeneTest, SNPs, on, Arrays, Kelly, Nutrinomica, NutraHacker, S
 
 ---
 
-### 🟡 rs4880 - SOD2
+### 🟢 rs4880 - SOD2
 
 - **Genotipo:** `GG`
 - **Encontrado en reportes:** genetic_genie, nutrahacker, foundmyfitness
@@ -437,7 +614,7 @@ Drugbank, Folate, GeneTest, SNPs, on, Arrays, Kelly, Nutrinomica, NutraHacker, S
 
 **Descripción:** SOD2 Ala16Val - función antioxidante mitocondrial
 
-**Implicaciones:** GG = menor actividad antioxidante, mayor necesidad de antioxidantes
+**Implicaciones:** Menor actividad antioxidante. GG = menor actividad antioxidante, mayor necesidad de antioxidantes
 
 **Condiciones relacionadas:**
 - Estrés oxidativo
@@ -465,7 +642,7 @@ Drugbank, Folate, GeneTest, SNPs, on, Arrays, Kelly, Nutrinomica, NutraHacker, S
 
 **Descripción:** Less likely to live to 100. Unfortunately, this version of FOXO3 has reduced longevity. It has lower insulin sensitivity, increased oxidative stress, and increased risk of diabetes and heart disease.. Asociado con longevidad y envejecimiento saludable
 
-**Implicaciones:** Portadores de GG tienen mayor probabilidad de longevidad
+**Implicaciones:** Menor probabilidad de longevidad. Portadores de GG tienen mayor probabilidad de longevidad
 
 **Condiciones relacionadas:**
 - Diabetes
@@ -480,26 +657,37 @@ Family, Tree, DNA, Factoids, Parsley, Health, Medical, Conditions, Longevity
 
 ---
 
-### 🟡 rs5882 - CETP
-
-- **Genotipo:** `AA`
-- **Genes:** CETP
-
-**Descripción:** Asociado con longevidad y perfil de colesterol
-
-**Implicaciones:** GG = mayor longevidad, mejor perfil de colesterol
-
-**Condiciones relacionadas:**
-- Colesterol
-- Longevidad
-
-**Más información:** [rs5882 en SNPedia](https://www.snpedia.com/index.php/Rs5882)
-
----
-
 ---
 
 ## Rasgos Heredados
+
+### 🟢 rs2180439 - EDA2R
+
+- **Genotipo:** `TT`
+- **Encontrado en reportes:** promethease
+- **Magnitud:** 3.0
+- **Reputación:** ⚠️ Bad
+- **Frecuencia poblacional:** 38.1%
+- **Ubicación:** Cromosoma 20, posición 21872462
+- **Genes:** EDA2R
+- **Publicaciones:** 2
+
+**Resumen:** 2x increased risk of Male Pattern Baldness. Verified in Europeans and Asians. Family Tree DNA reports this SNP as more likely to go bald, but 23andMe doesn't mention it.
+
+**Descripción:** 2x increased risk of Male Pattern Baldness. Verified in Europeans and Asians. Family Tree DNA reports this SNP as more likely to go bald, but 23andMe doesn't mention it.. Aumento de 2x en el riesgo de calvicie masculina
+
+**Implicaciones:** Homocigoto normal. Asociado con la pérdida de cabello temprana en hombres.
+
+**Condiciones relacionadas:**
+- Baldness
+- Calvicie masculina
+
+**Temas relacionados:**
+Family, Tree, DNA, Factoids, Medical, Conditions, Baldness
+
+**Más información:** [rs2180439 en SNPedia](https://www.snpedia.com/index.php/Rs2180439)
+
+---
 
 ### 🟢 rs1805007 - MC1R
 
@@ -508,7 +696,7 @@ Family, Tree, DNA, Factoids, Parsley, Health, Medical, Conditions, Longevity
 
 **Descripción:** Asociado con piel clara y cabello rojo
 
-**Implicaciones:** Mayor sensibilidad al sol, mayor riesgo de quemaduras
+**Implicaciones:** Genotipo normal (sin alelo de riesgo). Mayor sensibilidad al sol, mayor riesgo de quemaduras
 
 **Condiciones relacionadas:**
 - Sensibilidad al sol
@@ -524,7 +712,7 @@ Family, Tree, DNA, Factoids, Parsley, Health, Medical, Conditions, Longevity
 
 **Descripción:** Asociado con color de ojos
 
-**Implicaciones:** GG = ojos marrones, AG = ojos verdes/avellana, AA = ojos azules
+**Implicaciones:** Genotipo normal (sin alelo de riesgo). GG = ojos marrones, AG = ojos verdes/avellana, AA = ojos azules
 
 **Más información:** [rs12913832 en SNPedia](https://www.snpedia.com/index.php/Rs12913832)
 
@@ -537,7 +725,7 @@ Family, Tree, DNA, Factoids, Parsley, Health, Medical, Conditions, Longevity
 
 **Descripción:** Sensibilidad al sabor amargo (PROP)
 
-**Implicaciones:** GG = no siente amargo, AG = siente moderadamente, AA = siente muy amargo
+**Implicaciones:** Genotipo normal (sin alelo de riesgo). GG = no siente amargo, AG = siente moderadamente, AA = siente muy amargo
 
 **Más información:** [rs713598 en SNPedia](https://www.snpedia.com/index.php/Rs713598)
 

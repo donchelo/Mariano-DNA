@@ -3,7 +3,7 @@ Motor de análisis genético principal
 Cruza el genoma con la base de datos de SNPs importantes
 """
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
 from .parser import GenomeParser
 from .snp_database import SNPDatabase, SNPInfo
@@ -67,6 +67,170 @@ class GeneticAnalyzer:
         self.report_extractor = report_extractor
         self.findings: List[Finding] = []
     
+    def _complement_allele(self, allele: str) -> str:
+        """
+        Convierte un alelo a su complemento en la hebra opuesta
+        
+        Args:
+            allele: Alelo (A, C, G, T)
+            
+        Returns:
+            Alelo complementario (A↔T, C↔G)
+        """
+        complement_map = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
+        return complement_map.get(allele, allele)
+    
+    def _complement_genotype(self, genotype: str) -> str:
+        """
+        Convierte un genotipo completo a su complemento en la hebra opuesta
+        
+        Args:
+            genotype: Genotipo (ej: "AA", "AG", "TT", "T")
+            
+        Returns:
+            Genotipo complementario (ej: "TT", "TC", "AA", "A")
+        """
+        if not genotype:
+            return genotype
+        return ''.join(self._complement_allele(allele) for allele in genotype)
+    
+    def _normalize_genotype_for_comparison(self, genotype: str) -> str:
+        """
+        Normaliza un genotipo para comparación (ordena alelos y maneja hemocigosis)
+        
+        Args:
+            genotype: Genotipo (ej: "AG", "GA", "T")
+            
+        Returns:
+            Genotipo normalizado (ej: "AG", "TT")
+        """
+        if not genotype:
+            return genotype
+        
+        # Manejar hemocigosis (ej: "T" -> "TT")
+        if len(genotype) == 1:
+            genotype = genotype * 2
+            
+        return ''.join(sorted(genotype))
+    
+    def _validate_genotype(self, genotype: Optional[str], snp_info: SNPInfo, 
+                          genome_genotypes: Dict[str, str]) -> Tuple[bool, str, str]:
+        """
+        Valida si el genotipo del usuario indica riesgo real
+        
+        Args:
+            genotype: Genotipo del usuario (ej: "AA", "AG", "GG")
+            snp_info: Información del SNP desde la base de datos
+            genome_genotypes: Diccionario con todos los genotipos del genoma
+            
+        Returns:
+            Tupla (has_risk, risk_level, interpretation):
+            - has_risk: True si hay riesgo, False si es normal
+            - risk_level: 'alto', 'medio', 'bajo', 'normal', 'protector'
+            - interpretation: Descripción del genotipo
+        """
+        if not genotype or not snp_info:
+            return False, 'normal', 'Genotipo no disponible'
+        
+        # Normalizar genotipo (ordenar alelos para comparación y manejar hemocigosis)
+        normalized_geno = self._normalize_genotype_for_comparison(genotype)
+        
+        # Si requiere combinación (ej: APOE necesita rs429358 + rs7412)
+        if snp_info.requires_combination and snp_info.combination_snp:
+            combo_genotype = genome_genotypes.get(snp_info.combination_snp)
+            if not combo_genotype:
+                return False, 'normal', 'Genotipo de combinación no disponible'
+            
+            # Lógica especial para APOE
+            if snp_info.rsid == 'rs429358' and snp_info.combination_snp == 'rs7412':
+                # rs429358: T = ε3, C = ε4
+                # rs7412: C = ε3, T = ε2
+                rs429358_geno = genotype
+                rs7412_geno = combo_genotype
+                
+                # Determinar haplotipo
+                if rs429358_geno == 'TT' and rs7412_geno == 'CC':
+                    return False, 'normal', 'APOE ε3/ε3 (genotipo normal)'
+                elif rs429358_geno == 'CT' and rs7412_geno == 'CC':
+                    return True, 'medio', 'APOE ε3/ε4 (riesgo moderado de Alzheimer)'
+                elif rs429358_geno == 'CC' and rs7412_geno == 'CC':
+                    return True, 'alto', 'APOE ε4/ε4 (alto riesgo de Alzheimer)'
+                elif rs429358_geno == 'TT' and rs7412_geno == 'CT':
+                    return False, 'protector', 'APOE ε2/ε3 (protección contra Alzheimer)'
+                elif rs429358_geno == 'CT' and rs7412_geno == 'CT':
+                    return False, 'protector', 'APOE ε2/ε4 (protección parcial)'
+                elif rs429358_geno == 'TT' and rs7412_geno == 'TT':
+                    return False, 'protector', 'APOE ε2/ε2 (protección contra Alzheimer)'
+                else:
+                    return False, 'normal', f'APOE combinación no estándar ({rs429358_geno}/{rs7412_geno})'
+            
+            elif snp_info.rsid == 'rs7412' and snp_info.combination_snp == 'rs429358':
+                # Ya procesado en rs429358, no duplicar
+                return False, 'normal', 'Procesado en combinación con rs429358'
+        
+        # Validación estándar usando genotype_interpretation
+        # Intentar primero con el genotipo original, luego con el complemento
+        genotypes_to_try = [genotype, self._complement_genotype(genotype)]
+        
+        for test_genotype in genotypes_to_try:
+            if snp_info.genotype_interpretation:
+                interpretation = snp_info.genotype_interpretation.get(test_genotype)
+                if interpretation:
+                    # Determinar nivel de riesgo basado en la interpretación
+                    interpretation_lower = interpretation.lower()
+                    # Primero verificar si es normal o protector (tiene prioridad)
+                    if 'normal' in interpretation_lower or 'función normal' in interpretation_lower or 'riesgo bajo' in interpretation_lower:
+                        return False, 'normal', interpretation
+                    elif 'protección' in interpretation_lower or 'protector' in interpretation_lower:
+                        return False, 'protector', interpretation
+                    # Luego verificar si hay riesgo
+                    # Homocigoto con reducción significativa de actividad es riesgo alto
+                    elif 'homocigoto' in interpretation_lower:
+                        if 'mayor riesgo' in interpretation_lower or ('riesgo' in interpretation_lower and 'bajo' not in interpretation_lower):
+                            return True, 'alto', interpretation
+                        elif 'reducción' in interpretation_lower and ('70%' in interpretation_lower or '60%' in interpretation_lower or '50%' in interpretation_lower):
+                            # Reducción significativa de actividad enzimática es riesgo alto
+                            return True, 'alto', interpretation
+                        elif 'riesgo' in interpretation_lower and 'bajo' not in interpretation_lower:
+                            return True, 'alto', interpretation
+                        else:
+                            # Homocigoto sin indicador claro de riesgo, asumir medio
+                            return True, 'medio', interpretation
+                    elif 'heterocigoto' in interpretation_lower and ('riesgo' in interpretation_lower and 'bajo' not in interpretation_lower):
+                        return True, 'medio', interpretation
+                    elif 'riesgo' in interpretation_lower and 'bajo' not in interpretation_lower:
+                        return True, 'medio', interpretation
+                    else:
+                        return False, 'bajo', interpretation
+        
+        # Fallback: validar usando risk_allele
+        # Intentar con genotipo original y complemento
+        for test_genotype in genotypes_to_try:
+            if snp_info.risk_allele and snp_info.normal_allele:
+                # Intentar con alelo de riesgo original
+                risk_count = test_genotype.count(snp_info.risk_allele)
+                if risk_count > 0:
+                    if risk_count == 2:
+                        return True, 'alto', f'Homocigoto para alelo de riesgo ({snp_info.risk_allele})'
+                    elif risk_count == 1:
+                        return True, 'medio', f'Heterocigoto portador de alelo de riesgo ({snp_info.risk_allele})'
+                
+                # Intentar con alelo de riesgo complementario
+                complement_risk_allele = self._complement_allele(snp_info.risk_allele)
+                risk_count = test_genotype.count(complement_risk_allele)
+                if risk_count > 0:
+                    if risk_count == 2:
+                        return True, 'alto', f'Homocigoto para alelo de riesgo ({snp_info.risk_allele})'
+                    elif risk_count == 1:
+                        return True, 'medio', f'Heterocigoto portador de alelo de riesgo ({snp_info.risk_allele})'
+        
+        # Si no se encontró riesgo en ninguna hebra, es normal
+        return False, 'normal', f'Genotipo normal (sin alelo de riesgo)'
+        
+        # Si no hay información de validación, asumir que hay riesgo (comportamiento anterior)
+        # pero marcar como 'bajo' para ser conservador
+        return True, 'bajo', 'Genotipo presente pero sin validación específica'
+    
     def analyze(self) -> List[Finding]:
         """
         Ejecuta el análisis completo
@@ -121,6 +285,11 @@ class GeneticAnalyzer:
             # Verificar si está en el genoma
             found_in_genome = genotype is not None
             
+            # VALIDACIÓN DE GENOTIPO: Verificar si realmente hay riesgo
+            has_risk, validated_risk_level, genotype_interpretation = self._validate_genotype(
+                genotype, snp_info, genome_genotypes
+            )
+            
             # Verificar si está en reportes
             found_in_reports = rsid in report_rsids
             report_sources = []
@@ -131,17 +300,47 @@ class GeneticAnalyzer:
             promethease_info = promethease_data.get(rsid, {})
             
             # Determinar categoría e importancia
-            # Si hay datos de Promethease, usar su información para enriquecer
             category = snp_info.category if snp_info else 'salud'
-            importance = snp_info.importance if snp_info else 'medio'
             
-            # Ajustar importancia basada en magnitude de Promethease
-            if promethease_info.get('magnitude'):
-                magnitude = promethease_info.get('magnitude', 0)
-                if magnitude >= 3.5:
-                    importance = 'alto'
-                elif magnitude >= 2.5:
-                    importance = 'medio'
+            # IMPORTANTE: La importancia debe reflejar el riesgo REAL del usuario
+            # Si el genotipo es normal o protector, siempre debe ser "bajo" (🟢)
+            if validated_risk_level == 'normal' or validated_risk_level == 'protector':
+                importance = 'bajo'
+            elif has_risk:
+                # Si hay riesgo, usar la magnitud de Promethease si está disponible
+                # o el nivel de riesgo validado
+                if promethease_info.get('magnitude'):
+                    magnitude = promethease_info.get('magnitude', 0)
+                    # Ajustar importancia basada en magnitud, pero respetando el nivel de riesgo validado
+                    if validated_risk_level == 'alto':
+                        importance = 'alto'
+                    elif validated_risk_level == 'medio':
+                        # Si la magnitud es muy alta, puede subir a alto
+                        if magnitude >= 3.5:
+                            importance = 'alto'
+                        else:
+                            importance = 'medio'
+                    else:
+                        # Si la magnitud es alta, puede subir a medio o alto
+                        if magnitude >= 3.5:
+                            importance = 'alto'
+                        elif magnitude >= 2.5:
+                            importance = 'medio'
+                        else:
+                            importance = 'bajo'
+                else:
+                    # Usar el nivel de riesgo validado directamente
+                    importance = validated_risk_level if validated_risk_level in ['alto', 'medio', 'bajo'] else 'medio'
+            else:
+                # Sin riesgo validado, usar magnitud de Promethease o bajo por defecto
+                if promethease_info.get('magnitude'):
+                    magnitude = promethease_info.get('magnitude', 0)
+                    if magnitude >= 3.5:
+                        importance = 'alto'
+                    elif magnitude >= 2.5:
+                        importance = 'medio'
+                    else:
+                        importance = 'bajo'
                 else:
                     importance = 'bajo'
             
@@ -153,8 +352,13 @@ class GeneticAnalyzer:
                 else:
                     description = promethease_info['summary']
             
-            # Construir implicaciones
+            # Construir implicaciones (añadir interpretación del genotipo)
             implications = snp_info.implications if snp_info else ''
+            if genotype_interpretation and genotype_interpretation != 'Genotipo no disponible':
+                if implications:
+                    implications = f"{genotype_interpretation}. {implications}"
+                else:
+                    implications = genotype_interpretation
             if promethease_info.get('description') and not implications:
                 implications = promethease_info['description'][:500]  # Limitar longitud
             
@@ -171,14 +375,28 @@ class GeneticAnalyzer:
                 if cond not in related_conditions:
                     related_conditions.append(cond)
             
-            # Solo incluir si está en el genoma o en reportes
-            # O si tiene magnitud alta en Promethease (aunque no esté en la BD local)
-            should_include = found_in_genome or found_in_reports
-            if not should_include and promethease_info.get('magnitude', 0) >= 3.0:
-                # Incluir SNPs de alta magnitud aunque no estén en la BD local
+            # FILTRAR: Solo incluir si realmente hay riesgo o si es de interés especial
+            # Excepciones: SNPs de rasgos (siempre mostrar) o si está en reportes externos
+            should_include = False
+            
+            if category == 'rasgos':
+                # Siempre mostrar rasgos heredados
+                should_include = found_in_genome or found_in_reports
+            elif has_risk:
+                # Incluir si hay riesgo validado
+                should_include = True
+            elif found_in_reports:
+                # Incluir si está en reportes externos (puede tener información adicional)
+                should_include = True
+            elif promethease_info.get('magnitude', 0) >= 3.0:
+                # Incluir SNPs de alta magnitud en Promethease
                 should_include = True
                 found_in_reports = True
                 report_sources = ['promethease']
+            elif validated_risk_level == 'protector':
+                # Incluir genotipos protectores (información útil)
+                should_include = True
+            # Si no hay riesgo y no es de interés especial, NO incluir
             
             if should_include:
                 finding = Finding(
