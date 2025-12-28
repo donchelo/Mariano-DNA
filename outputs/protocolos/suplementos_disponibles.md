@@ -109,18 +109,139 @@
 
 ---
 
+## 🚚 SULEMENTOS EN CAMINO (Llegan 5-8 de enero de 2026)
+
+### **10. Nutricost Methylfolate 1000mcg** ⭐ TIER 1 - CRÍTICO
+- **Cantidad:** 120 cápsulas vegetarianas
+- **Forma:** Metilfolato (L-5-MTHF)
+- **Características:** Gluten Free, Non-GMO
+- **Prioridad:** ⭐ TIER 1 - CRÍTICO
+- **Razón genética:** MTHFR C677T homocigoto - Reducción ~70% actividad
+- **Dosis recomendada:** 1000 mcg/día
+- **Duración estimada:** ~4 meses
+- **Estado:** 🚚 En camino (llega 5 enero)
+- **⚠️ IMPORTANTE:** Forma metilada correcta (NO ácido fólico sintético)
+
+---
+
+### **11. NOW Supplements, Methyl B-12 (Methylcobalamin) 1,000 mcg** ⭐ TIER 1 - CRÍTICO
+- **Cantidad:** 100 lozenges (pastillas sublinguales)
+- **Forma:** Metilcobalamina (B12 activa)
+- **Características:** Para salud del sistema nervioso
+- **Prioridad:** ⭐ TIER 1 - CRÍTICO
+- **Razón genética:** MTRR A66G + FUT2 no-secretor
+- **Dosis recomendada:** 1000 mcg/día (sublingual)
+- **Duración estimada:** ~3 meses
+- **Estado:** 🚚 En camino (llega 5 enero)
+- **✅ Ventaja:** Forma sublingual ideal para FUT2 no-secretor
+
+---
+
+### **12. Nutricost P5P Vitamin B6 Supplement 50mg** ⭐ TIER 1 - CRÍTICO
+- **Cantidad:** 240 cápsulas
+- **Forma:** Piridoxal-5-Fosfato (P5P - B6 activa)
+- **Características:** Vegetarian Friendly, Non-GMO, Gluten Free
+- **Prioridad:** ⭐ TIER 1 - CRÍTICO
+- **Razón genética:** CTH homocigoto - Homocisteína elevada
+- **Dosis recomendada:** 50 mg/día
+- **Duración estimada:** ~8 meses
+- **Estado:** 🚚 En camino (llega 5 enero)
+
+---
+
+### **13. Nutricost TMG (Trimethylglycine) 750mg** ⭐ TIER 1 - CRÍTICO
+- **Cantidad:** 120 cápsulas
+- **Forma:** Trimetilglicina (Betaina)
+- **Prioridad:** ⭐ TIER 1 - CRÍTICO
+- **Razón genética:** Apoyo a ruta de metilación y reducción de homocisteína
+- **Dosis recomendada:** 750-1000 mg/día
+- **Duración estimada:** ~4 meses
+- **Estado:** 🚚 En camino (llega 5 enero)
+
+---
+
+### **14. Nutricost Selenium 200mcg** - Tier 2
+- **Cantidad:** 240 cápsulas vegetarianas
+- **Forma:** L-Selenomethionine
+- **Características:** Non-GMO, Gluten Free
+- **Prioridad:** Tier 2 - Importante
+- **Razón genética:** DIO1 (rs2235544) - Conversión T4→T3 reducida
+- **Dosis recomendada:** 200 mcg/día
+- **Duración estimada:** ~8 meses
+- **Estado:** 🚚 En camino (llega 5 enero)
+
+---
+
+### **15. Nutricost N-Acetyl L-Cysteine (NAC) 600mg** - Tier 2
+- **Cantidad:** 240 cápsulas vegetarianas
+- **Características:** Vegan, Non-GMO, Gluten Free
+- **Prioridad:** Tier 2 - Importante
+- **Razón genética:** SOD2 + FOXO3 - Apoyo a glutatión y antioxidantes
+- **Dosis recomendada:** 600 mg/día
+- **Duración estimada:** ~8 meses
+- **Estado:** 🚚 En camino (llega 5 enero)
+
+---
+
+### **16. Nutricost Vitamin B2 (Riboflavin) 100mg**
+- **Cantidad:** 120 cápsulas
+- **Características:** Gluten Free, Non-GMO
+- **Dosis recomendada:** Según protocolo médico
+- **Duración estimada:** ~4 meses
+- **Estado:** 🚚 En camino (llega 5 enero)
+- **Nota:** No estaba en lista original de compras
+
+---
+
+### **17. Nutricost Vitamin K2 (MK7) (100mcg) + Vitamin D3 (5000 IU)**
+- **Cantidad:** 120 cápsulas blandas
+- **Combinación:** K2 (MK7) 100mcg + D3 5000 IU
+- **Características:** Gluten Free, Non-GMO
+- **Duración estimada:** ~4 meses
+- **Estado:** 🚚 En camino (llega 5 enero)
+- **Nota:** Ya tienes D3+K2 (10,000 IU + 200mcg K2) disponible. Esta versión tiene menos dosis.
+
+---
+
+### **18. Kirkland Signature Fish Oil Concentrate with Omega-3**
+- **Cantidad:** 800 cápsulas blandas
+- **Dosis por cápsula:** 1000mg
+- **Características:** Concentrado con ácidos grasos Omega-3
+- **Duración estimada:** ~26 meses (asumiendo 1 cápsula/día)
+- **Estado:** 🚚 En camino (llega 8 enero)
+- **Nota:** Ya tienes Omega 3-6-9 Complex disponible. Este es un refuerzo adicional.
+
+---
+
+### **19. Doctor's Best High Absorption Magnesium Glycinate Lysinate**
+- **Cantidad:** 240 comprimidos
+- **Dosis por porción:** 200 mg de magnesio elemental
+- **Forma:** 100% Quelado (glicinato de lisina)
+- **Características:** Non-GMO, Vegano, Gluten Free, Sin Soja
+- **Beneficios:** Alta absorción, para sueño y relajación muscular
+- **Duración estimada:** ~8 meses (asumiendo 1/día)
+- **Estado:** 🚚 En camino (llega 5-6 enero)
+- **Nota:** Ya tienes magnesio (cloruro) en Fórmula Detox. Este glicinato es más biodisponible.
+
+---
+
 ## RESUMEN POR CATEGORÍA
 
 ### **Minerales y Vitaminas**
-- Vitamina D3 + K2
+- Vitamina D3 + K2 (disponible)
+- Vitamina D3 + K2 (en camino - menor dosis)
 - Magnesio (cloruro - en Fórmula Detox)
+- Magnesio Glicinato (en camino - más biodisponible) 🚚
+- Selenio (en camino) 🚚
+- Vitamina B2/Riboflavina (en camino) 🚚
 
 ### **Proteínas**
 - Colágeno polvo (20g)
 - Colágeno caplets (3g) - ⚪ Discontinuar
 
 ### **Ácidos Grasos**
-- Omega 3-6-9 Complex
+- Omega 3-6-9 Complex (disponible)
+- Omega-3 Fish Oil (en camino - refuerzo) 🚚
 
 ### **Adaptógenos**
 - Ashwagandha
@@ -136,6 +257,15 @@
 ### **Control Metabólico**
 - Vinagre de manzana
 
+### **Metilación y Vitaminas B (En camino - TIER 1)** 🚚
+- Metilfolato (L-5-MTHF) 1000mcg ⭐
+- Metil B-12 1000mcg (sublingual) ⭐
+- P5P (B6 activa) 50mg ⭐
+- TMG (Trimetilglicina) 750mg ⭐
+
+### **Antioxidantes y Detox (En camino)** 🚚
+- NAC (N-Acetil Cisteína) 600mg
+
 ---
 
 ## VALOR ESTIMADO DEL INVENTARIO
@@ -150,7 +280,9 @@
 | Vinagre de Manzana | $15,000-25,000 |
 | Fórmula Moringa | $30,000-50,000 |
 | Fórmula Detox | $40,000-60,000 |
-| **TOTAL ESTIMADO** | **$425,000-635,000** |
+| **TOTAL DISPONIBLE** | **$425,000-635,000** |
+| **En camino (pedidos)** | **~$691,000** |
+| **TOTAL ESTIMADO** | **~$1,116,000-1,326,000** |
 
 ---
 
@@ -186,3 +318,14 @@
 | Vinagre Manzana | ___________ | ⬜ Verificar |
 | Fórmula Moringa | ___________ | ⬜ Verificar |
 | Fórmula Detox | ___________ | ⬜ Verificar |
+| **EN CAMINO (verificar al recibir):** | | |
+| Metilfolato 1000mcg | ___________ | 🚚 Llega 5 enero |
+| Metil B-12 1000mcg | ___________ | 🚚 Llega 5 enero |
+| P5P B6 50mg | ___________ | 🚚 Llega 5 enero |
+| TMG 750mg | ___________ | 🚚 Llega 5 enero |
+| Selenio 200mcg | ___________ | 🚚 Llega 5 enero |
+| NAC 600mg | ___________ | 🚚 Llega 5 enero |
+| Vitamina B2 100mg | ___________ | 🚚 Llega 5 enero |
+| D3+K2 (5000+100) | ___________ | 🚚 Llega 5 enero |
+| Omega-3 Fish Oil | ___________ | 🚚 Llega 8 enero |
+| Magnesio Glicinato | ___________ | 🚚 Llega 5-6 enero |
