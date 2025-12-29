@@ -448,6 +448,62 @@ class EpigeneticParser(BaseReportParser):
         return findings
 
 
+class BloodTestParserWrapper(BaseReportParser):
+    """Wrapper para BloodTestParser que sigue el patrón BaseReportParser"""
+    
+    def __init__(self):
+        super().__init__('blood_test')
+        # Importar aquí para evitar dependencias circulares
+        try:
+            from .blood_test_parser import BloodTestParser
+        except ImportError:
+            # Fallback para importación absoluta
+            import sys
+            from pathlib import Path
+            sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+            from src.dna_analyzer.blood_test_parser import BloodTestParser
+        self.blood_parser = BloodTestParser()
+    
+    def can_parse(self, file_path: str) -> bool:
+        """Verifica si es un archivo PDF de examen de sangre"""
+        path = Path(file_path)
+        name_lower = path.name.lower()
+        return (path.suffix.lower() == '.pdf' and 
+                ('examen' in name_lower or 'sangre' in name_lower or 
+                 'vitalea' in name_lower or 'laboratorio' in name_lower))
+    
+    def parse(self, file_path: str) -> List[Dict[str, Any]]:
+        """Extrae resultados del examen de sangre"""
+        findings = []
+        
+        try:
+            data = self.blood_parser.parse_pdf(file_path)
+            
+            # Convertir resultados a formato de hallazgos
+            for test in data.get('test_results', []):
+                finding = {
+                    'test_name': test.get('test_name'),
+                    'value': test.get('value'),
+                    'numeric_value': test.get('numeric_value'),
+                    'units': test.get('units'),
+                    'reference_range': test.get('reference_range'),
+                    'reference_text': test.get('reference_text'),
+                    'method': test.get('method'),
+                    'source': self.source_name,
+                    'patient': data.get('patient', {}),
+                    'sample_date': data.get('patient', {}).get('sample_date'),
+                    'type': 'blood_test_result'
+                }
+                findings.append(finding)
+            
+            print(f"[OK] Blood Test: {len(findings)} resultados extraidos")
+            
+        except Exception as e:
+            print(f"[ERROR] Error extrayendo examen de sangre: {e}")
+        
+        return findings
+
+
 class ReportExtractor:
     """Extrae información de reportes PDF y HTML existentes usando parsers específicos"""
     
@@ -461,7 +517,8 @@ class ReportExtractor:
             GeneticGenieParser(),
             NutraHackerParser(),
             FoundMyFitnessParser(),
-            EpigeneticParser()
+            EpigeneticParser(),
+            BloodTestParserWrapper()
         ]
     
     def _get_parser_for_file(self, file_path: str) -> Optional[BaseReportParser]:
