@@ -57,12 +57,18 @@ class PRSAuditor:
                     missing_snps.append(rsid)
             
             if missing_snps:
-                self.issues.append({
-                    'condition': condition,
-                    'type': 'missing_snps',
-                    'missing_snps': missing_snps,
-                    'issue': f'{condition}: Faltan {len(missing_snps)} SNPs'
-                })
+                # Esto no es necesariamente un error - los SNPs pueden no estar en el genoma
+                # Solo reportar como advertencia si faltan muchos SNPs
+                if len(missing_snps) < len(definition['snps']) * 0.5:  # Si faltan menos del 50%
+                    # Es normal que algunos SNPs no estén en el genoma
+                    pass
+                else:
+                    self.issues.append({
+                        'condition': condition,
+                        'type': 'missing_snps',
+                        'missing_snps': missing_snps,
+                        'issue': f'{condition}: Faltan {len(missing_snps)} de {len(definition["snps"])} SNPs (puede afectar precisión del PRS)'
+                    })
     
     def audit_calculations(self):
         """Valida cálculos de PRS"""

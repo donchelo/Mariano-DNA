@@ -55,16 +55,27 @@ class BiomarkersAuditor:
                     })
                     continue
                 
-                # Validar que tenga fecha
-                if 'date' not in data and 'fecha' not in data:
+                # Validar que tenga fecha (puede estar en patient.sample_date o date o fecha)
+                has_date = (
+                    'date' in data or 
+                    'fecha' in data or 
+                    data.get('patient', {}).get('sample_date') or
+                    data.get('patient', {}).get('reception_date')
+                )
+                if not has_date:
                     self.issues.append({
                         'file': json_file.name,
                         'type': 'missing_date',
                         'issue': 'Archivo no tiene campo de fecha'
                     })
                 
-                # Validar que tenga resultados
-                if 'results' not in data and 'resultados' not in data:
+                # Validar que tenga resultados (puede estar en test_results o results o resultados)
+                has_results = (
+                    'results' in data or 
+                    'resultados' in data or 
+                    'test_results' in data
+                )
+                if not has_results:
                     self.issues.append({
                         'file': json_file.name,
                         'type': 'missing_results',

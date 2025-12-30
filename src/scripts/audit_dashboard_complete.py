@@ -67,8 +67,19 @@ class CompleteAuditor:
                     latest_report = max(report_files, key=lambda p: p.stat().st_mtime)
                     report_content = latest_report.read_text(encoding='utf-8')
                     
-                    # Contar problemas (heurística simple)
-                    issues_count = report_content.count('**Problema:**') + report_content.count('**Problemas encontrados:**')
+                    # Contar problemas de forma más precisa
+                    # Buscar el patrón "**Problemas encontrados:** X" donde X es un número
+                    import re
+                    match = re.search(r'\*\*Problemas encontrados:\*\*\s*(\d+)', report_content)
+                    if match:
+                        issues_count = int(match.group(1))
+                    else:
+                        # Si no encuentra el patrón, buscar "No se encontraron problemas"
+                        if 'No se encontraron problemas' in report_content or 'no se encontraron problemas' in report_content:
+                            issues_count = 0
+                        else:
+                            # Fallback: contar ocurrencias de "**Problema:**"
+                            issues_count = report_content.count('**Problema:**')
                     
                     return {
                         'status': 'success',

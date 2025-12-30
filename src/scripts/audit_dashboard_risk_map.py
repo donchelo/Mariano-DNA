@@ -61,17 +61,21 @@ class RiskMapAuditor:
         # Verificar que cada sistema tenga conteos consistentes
         for system_name, system_risk in system_risks.items():
             # Verificar que total_snps = suma de conteos de riesgo
-            calculated_total = (system_risk.high_risk_count + 
-                              system_risk.medium_risk_count + 
-                              system_risk.low_risk_count)
+            # Nota: total_snps incluye todos los SNPs asignados al sistema,
+            # mientras que los conteos de riesgo solo incluyen SNPs con riesgo (no normales/protectores)
+            calculated_risk_total = (system_risk.high_risk_count + 
+                                     system_risk.medium_risk_count + 
+                                     system_risk.low_risk_count)
             
-            if system_risk.total_snps != calculated_total and system_risk.total_snps > 0:
+            # Solo reportar si hay una discrepancia significativa
+            # (total_snps puede ser mayor porque incluye SNPs normales/protectores)
+            if system_risk.total_snps > 0 and calculated_risk_total > system_risk.total_snps:
                 self.issues.append({
                     'system': system_name,
                     'type': 'count_mismatch',
                     'total_snps': system_risk.total_snps,
-                    'calculated_total': calculated_total,
-                    'issue': f'Total SNPs ({system_risk.total_snps}) no coincide con suma de riesgos ({calculated_total})'
+                    'calculated_total': calculated_risk_total,
+                    'issue': f'Total SNPs ({system_risk.total_snps}) menor que suma de riesgos ({calculated_risk_total}) - posible error'
                 })
             
             # Verificar que risk_score esté en rango 0-1
