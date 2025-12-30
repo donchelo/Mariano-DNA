@@ -11,9 +11,16 @@ import plotly.express as px
 import plotly.graph_objects as go
 from pathlib import Path
 import sys
+import json
+import re
+from typing import Optional, Dict, List, Any
+from datetime import datetime
 
-# Agregar el directorio raíz al path para imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+# Agregar el directorio src al path para imports
+project_root = Path(__file__).parent.parent.parent
+src_path = project_root / "src"
+sys.path.insert(0, str(src_path))
+sys.path.insert(0, str(project_root))
 
 from dna_analyzer.parser import GenomeParser
 from dna_analyzer.analyzer import GeneticAnalyzer
@@ -22,6 +29,7 @@ from dna_analyzer.pdf_extractor import ReportExtractor
 from dna_analyzer.pharmacogenomics import PharmacogenomicsAnalyzer
 from dna_analyzer.prs_calculator import PRSCalculator
 from dna_analyzer.clinvar_client import ClinVarClient
+from dna_analyzer.system_mapper import SystemMapper
 
 
 def find_genome_file() -> Optional[Path]:
@@ -37,6 +45,152 @@ def find_genome_file() -> Optional[Path]:
     
     # Retornar el más reciente
     return max(txt_files, key=lambda p: p.stat().st_mtime)
+
+
+def find_blood_test_files() -> List[Dict[str, Any]]:
+    """Encuentra todos los archivos de exámenes de sangre parseados"""
+    blood_test_dir = Path("data/raw/examenes_sangre")
+    if not blood_test_dir.exists():
+        return []
+    
+    # Buscar archivos JSON parseados
+    json_files = list(blood_test_dir.glob("*_parsed.json"))
+    if not json_files:
+        return []
+    
+    blood_tests = []
+    for json_file in sorted(json_files, key=lambda p: p.stat().st_mtime, reverse=True):
+        try:
+            with open(json_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                # Extraer fecha del nombre del archivo o de los datos
+                sample_date = data.get('patient', {}).get('sample_date', '')
+                if not sample_date:
+                    # Intentar extraer de nombre de archivo
+                    match = re.search(r'(\d{4}-\d{2}-\d{2})', json_file.name)
+                    if match:
+                        sample_date = match.group(1)
+                
+                blood_tests.append({
+                    'file_path': json_file,
+                    'data': data,
+                    'sample_date': sample_date,
+                    'test_name': json_file.stem
+                })
+        except Exception as e:
+            st.warning(f"Error cargando {json_file.name}: {e}")
+    
+    return blood_tests
+
+
+def extract_supplement_data() -> Dict[str, Any]:
+    """Extrae datos de suplementos del archivo markdown"""
+    supplement_file = Path("outputs/protocolos/stack_suplementos_organizado.md")
+    if not supplement_file.exists():
+        return {}
+    
+    try:
+        with open(supplement_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        supplements = {}
+        
+        # Mapeo de suplementos a biomarcadores relacionados
+        supplement_biomarker_map = {
+            'metilfolato': ['HOMOCISTEINA', 'ÁCIDO FÓLICO', 'FOLATO'],
+            'metil b-12': ['VITAMINA B-12', 'HOMOCISTEINA'],
+            'p5p': ['HOMOCISTEINA'],
+            'tmg': ['HOMOCISTEINA'],
+            'vitamina b2': ['HOMOCISTEINA'],
+            'nac': ['HOMOCISTEINA'],
+            'vitamina d3': ['VITAMINA D'],
+            'selenio': ['TSH', 'T3 LIBRE', 'T4 LIBRE'],
+            'magnesio': ['VITAMINA D'],
+            'omega-3': ['COLESTEROL LDL', 'COLESTEROL HDL', 'TRIGLICERIDOS'],
+            'citrus bergamot': ['COLESTEROL LDL', 'GLICEMIA', 'COLESTEROL TOTAL'],
+            'berberina': ['GLICEMIA', 'HbA1C', 'COLESTEROL LDL']
+        }
+        
+        # Extraer dosis de suplementos usando regex
+        # Buscar patrones como "**Metilfolato** (1000-2000 mcg)"
+        dose_pattern = r'\*\*([^*]+)\*\*\s*\(([^)]+)\)'
+        matches = re.finditer(dose_pattern, content, re.IGNORECASE)
+        
+        for match in matches:
+            supplement_name = match.group(1).strip().lower()
+            dose_info = match.group(2).strip()
+            
+            # Extraer valores numéricos de la dosis
+            dose_match = re.search(r'(\d+(?:\.\d+)?)\s*(?:-|a)\s*(\d+(?:\.\d+)?)?\s*(mcg|mg|iu|µg)', dose_info, re.IGNORECASE)
+            if dose_match:
+                min_dose = float(dose_match.group(1))
+                max_dose = float(dose_match.group(2)) if dose_match.group(2) else min_dose
+                unit = dose_match.group(3).lower()
+                
+                # Normalizar unidades
+                if unit in ['mcg', 'µg']:
+                    unit = 'mcg'
+                elif unit == 'iu':
+                    unit = 'IU'
+                
+                # Buscar biomarcadores relacionados
+                biomarkers = []
+                for supp_key, biomarker_list in supplement_biomarker_map.items():
+                    if supp_key in supplement_name:
+                        biomarkers = biomarker_list
+                        break
+                
+                supplements[supplement_name] = {
+                    'name': match.group(1).strip(),
+                    'min_dose': min_dose,
+                    'max_dose': max_dose,
+                    'unit': unit,
+                    'biomarkers': biomarkers
+                }
+        
+        return supplements
+    except Exception as e:
+        st.warning(f"Error extrayendo datos de suplementos: {e}")
+        return {}
+
+
+def load_biomarker_history() -> pd.DataFrame:
+    """Carga el historial de biomarcadores desde exámenes de sangre"""
+    blood_tests = find_blood_test_files()
+    
+    if not blood_tests:
+        return pd.DataFrame()
+    
+    records = []
+    for test in blood_tests:
+        sample_date = test['sample_date']
+        test_results = test['data'].get('test_results', [])
+        
+        for result in test_results:
+            test_name = result.get('test_name', '')
+            numeric_value = result.get('numeric_value')
+            
+            if numeric_value is not None:
+                records.append({
+                    'date': sample_date,
+                    'test_name': test_name.upper(),
+                    'value': numeric_value,
+                    'units': result.get('units', ''),
+                    'reference_min': result.get('reference_range', {}).get('min'),
+                    'reference_max': result.get('reference_range', {}).get('max')
+                })
+    
+    if records:
+        df = pd.DataFrame(records)
+        # Convertir fecha a datetime si es posible
+        try:
+            df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y', errors='coerce')
+            df = df.sort_values('date')
+        except:
+            pass
+        return df
+    
+    return pd.DataFrame()
 
 
 def main():
@@ -74,11 +228,13 @@ def main():
             stats = analyzer.get_statistics()
         
         # Tabs principales
-        tab1, tab2, tab3, tab4, tab5 = st.tabs([
+        tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
             "📊 Resumen", 
             "🔍 Hallazgos", 
             "💊 Farmacogenómica",
             "📈 PRS",
+            "🗺️ Mapa de Riesgo",
+            "📈 Seguimiento",
             "📋 Reportes"
         ])
         
@@ -258,8 +414,275 @@ def main():
             except Exception as e:
                 st.error(f"Error calculando PRS: {e}")
         
-        # Tab 5: Reportes
+        # Tab 5: Mapa de Calor de Riesgo
         with tab5:
+            st.header("🗺️ Mapa de Calor de Riesgo por Sistemas")
+            st.markdown("Visualización de la densidad de riesgo genético agrupado por sistemas biológicos")
+            
+            try:
+                # Mapear hallazgos a sistemas
+                system_mapper = SystemMapper()
+                system_risks = system_mapper.map_findings_to_systems(findings)
+                
+                # Crear DataFrame para visualización
+                df_systems = system_mapper.get_system_risk_dataframe()
+                
+                if not df_systems.empty:
+                    # Gráfico de mapa de calor
+                    st.subheader("Mapa de Calor de Riesgo")
+                    
+                    # Preparar datos para el mapa de calor
+                    heatmap_data = df_systems.set_index('Sistema')[['Score de Riesgo', 'Alto Riesgo', 'Riesgo Medio', 'Riesgo Bajo']]
+                    
+                    fig = px.imshow(
+                        heatmap_data.T,
+                        labels=dict(x="Sistema", y="Métrica", color="Valor"),
+                        color_continuous_scale="RdYlGn_r",  # Rojo-Amarillo-Verde invertido (rojo = alto riesgo)
+                        aspect="auto",
+                        title="Densidad de Riesgo Genético por Sistema"
+                    )
+                    fig.update_layout(height=400)
+                    st.plotly_chart(fig, use_container_width=True)
+                    
+                    # Gráfico de barras de score de riesgo
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        st.subheader("Score de Riesgo por Sistema")
+                        fig_bar = px.bar(
+                            df_systems,
+                            x='Sistema',
+                            y='Score de Riesgo',
+                            color='Score de Riesgo',
+                            color_continuous_scale="RdYlGn_r",
+                            title="Score Normalizado de Riesgo"
+                        )
+                        fig_bar.update_layout(showlegend=False, height=400)
+                        st.plotly_chart(fig_bar, use_container_width=True)
+                    
+                    with col2:
+                        st.subheader("Distribución de SNPs por Nivel de Riesgo")
+                        # Crear datos apilados
+                        risk_data = []
+                        for _, row in df_systems.iterrows():
+                            risk_data.append({'Sistema': row['Sistema'], 'Nivel': 'Alto Riesgo', 'Cantidad': row['Alto Riesgo']})
+                            risk_data.append({'Sistema': row['Sistema'], 'Nivel': 'Riesgo Medio', 'Cantidad': row['Riesgo Medio']})
+                            risk_data.append({'Sistema': row['Sistema'], 'Nivel': 'Riesgo Bajo', 'Cantidad': row['Riesgo Bajo']})
+                        
+                        df_risk_dist = pd.DataFrame(risk_data)
+                        fig_stack = px.bar(
+                            df_risk_dist,
+                            x='Sistema',
+                            y='Cantidad',
+                            color='Nivel',
+                            color_discrete_map={
+                                'Alto Riesgo': 'red',
+                                'Riesgo Medio': 'orange',
+                                'Riesgo Bajo': 'yellow'
+                            },
+                            title="SNPs por Nivel de Riesgo",
+                            barmode='stack'
+                        )
+                        fig_stack.update_layout(height=400)
+                        st.plotly_chart(fig_stack, use_container_width=True)
+                    
+                    # Tabla detallada
+                    st.subheader("Detalles por Sistema")
+                    st.dataframe(df_systems, use_container_width=True)
+                    
+                    # Detalles de hallazgos por sistema
+                    st.subheader("Hallazgos Detallados por Sistema")
+                    selected_system = st.selectbox(
+                        "Seleccionar sistema para ver detalles",
+                        options=list(system_risks.keys()),
+                        format_func=lambda x: f"{x} ({system_risks[x].total_snps} SNPs)"
+                    )
+                    
+                    if selected_system and system_risks[selected_system].findings:
+                        st.write(f"**Total de SNPs en {selected_system}:** {system_risks[selected_system].total_snps}")
+                        st.write(f"**Score de Riesgo:** {system_risks[selected_system].risk_score:.3f}")
+                        
+                        for finding in system_risks[selected_system].findings:
+                            with st.expander(f"{finding.rsid} - {finding.snp_info.gene if finding.snp_info else 'N/A'} ({finding.importance})"):
+                                st.write(f"**Genotipo:** {finding.genotype or 'No encontrado'}")
+                                st.write(f"**Descripción:** {finding.description}")
+                                st.write(f"**Implicaciones:** {finding.implications}")
+                else:
+                    st.info("No se encontraron sistemas con SNPs para visualizar")
+            except Exception as e:
+                st.error(f"Error generando mapa de calor: {e}")
+                st.exception(e)
+        
+        # Tab 6: Seguimiento de Biomarcadores
+        with tab6:
+            st.header("📈 Seguimiento de Biomarcadores y Suplementación")
+            st.markdown("Relación entre dosis de suplementos y niveles en sangre")
+            
+            try:
+                # Cargar datos
+                biomarker_df = load_biomarker_history()
+                supplement_data = extract_supplement_data()
+                
+                if biomarker_df.empty:
+                    st.warning("No se encontraron exámenes de sangre. Agrega archivos JSON parseados en `data/raw/examenes_sangre/`")
+                else:
+                # Seleccionar biomarcador
+                available_biomarkers = sorted(biomarker_df['test_name'].unique())
+                selected_biomarker = st.selectbox(
+                    "Seleccionar biomarcador para visualizar",
+                    options=available_biomarkers
+                )
+                
+                if selected_biomarker:
+                    # Filtrar datos del biomarcador seleccionado
+                    biomarker_data = biomarker_df[biomarker_df['test_name'] == selected_biomarker].copy()
+                    
+                    if not biomarker_data.empty:
+                        # Gráfico de evolución temporal
+                        st.subheader(f"Evolución de {selected_biomarker}")
+                        
+                        # Preparar datos: convertir fechas y filtrar valores inválidos
+                        plot_data = biomarker_data.copy()
+                        
+                        # Convertir fechas de forma segura
+                        try:
+                            # Intentar convertir a datetime
+                            if not pd.api.types.is_datetime64_any_dtype(plot_data['date']):
+                                plot_data['date'] = pd.to_datetime(plot_data['date'], errors='coerce')
+                            
+                            # Si hay NaT, usar índice como fallback
+                            if plot_data['date'].isna().any():
+                                plot_data['date'] = plot_data.index.astype(str)
+                            else:
+                                # Convertir datetime a string para Plotly
+                                plot_data['date'] = plot_data['date'].astype(str)
+                        except Exception as date_error:
+                            # Si falla la conversión, usar índice
+                            plot_data['date'] = plot_data.index.astype(str)
+                        
+                        # Convertir a lista para evitar problemas con Plotly
+                        x_values = plot_data['date'].tolist()
+                        y_values = plot_data['value'].tolist()
+                        
+                        # Validar que tenemos datos válidos
+                        if not x_values or not y_values:
+                            st.warning("No hay datos válidos para graficar")
+                        else:
+                            # Crear gráfico de línea con rangos de referencia
+                            fig = go.Figure()
+                            
+                            # Agregar línea de valores
+                            fig.add_trace(go.Scatter(
+                                x=x_values,
+                                y=y_values,
+                                mode='lines+markers',
+                                name='Valor Medido',
+                                line=dict(color='blue', width=2),
+                                marker=dict(size=10)
+                            ))
+                            
+                            # Agregar rangos de referencia si están disponibles
+                            if plot_data['reference_min'].notna().any():
+                                ref_min = plot_data['reference_min'].dropna().iloc[0]
+                                if pd.notna(ref_min):
+                                    fig.add_trace(go.Scatter(
+                                        x=x_values,
+                                        y=[ref_min] * len(plot_data),
+                                        mode='lines',
+                                        name='Límite Mínimo',
+                                        line=dict(color='green', width=1, dash='dash'),
+                                        showlegend=True
+                                    ))
+                            
+                            if plot_data['reference_max'].notna().any():
+                                ref_max = plot_data['reference_max'].dropna().iloc[0]
+                                if pd.notna(ref_max):
+                                    fig.add_trace(go.Scatter(
+                                        x=x_values,
+                                        y=[ref_max] * len(plot_data),
+                                        mode='lines',
+                                        name='Límite Máximo',
+                                        line=dict(color='red', width=1, dash='dash'),
+                                        showlegend=True
+                                    ))
+                            
+                            # Agregar zona óptima (si hay información)
+                            # Por ejemplo, para homocisteína, el óptimo es <7 µmol/L
+                            optimal_ranges = {
+                                'HOMOCISTEINA': (0, 7),
+                                'VITAMINA D': (50, 70),
+                                'VITAMINA B-12': (800, 2000),
+                                'ÁCIDO FÓLICO': (15, 20),
+                                'GLICEMIA': (70, 85),
+                                'COLESTEROL LDL': (0, 100),
+                                'COLESTEROL HDL': (50, 100)
+                            }
+                            
+                            biomarker_key = selected_biomarker.upper()
+                            if biomarker_key in optimal_ranges:
+                                opt_min, opt_max = optimal_ranges[biomarker_key]
+                                fig.add_trace(go.Scatter(
+                                    x=x_values,
+                                    y=[opt_max] * len(plot_data),
+                                    mode='lines',
+                                    name='Óptimo Superior',
+                                    line=dict(color='lightgreen', width=1, dash='dot'),
+                                    fillcolor='rgba(144, 238, 144, 0.2)',
+                                    fill='tonexty' if plot_data['reference_min'].notna().any() else None,
+                                    showlegend=True
+                                ))
+                            
+                            units_str = plot_data['units'].iloc[0] if plot_data['units'].notna().any() else ''
+                            fig.update_layout(
+                                title=f"Evolución de {selected_biomarker}",
+                                xaxis_title="Fecha",
+                                yaxis_title=f"Valor ({units_str})",
+                                height=500,
+                                hovermode='x unified'
+                            )
+                            st.plotly_chart(fig, use_container_width=True)
+                        
+                        # Mostrar tabla de datos
+                        st.subheader("Datos Históricos")
+                        display_df = biomarker_data[['date', 'value', 'units', 'reference_min', 'reference_max']].copy()
+                        display_df.columns = ['Fecha', 'Valor', 'Unidades', 'Ref. Mín', 'Ref. Máx']
+                        st.dataframe(display_df, use_container_width=True)
+                        
+                        # Información de suplementos relacionados
+                        st.subheader("Suplementos Relacionados")
+                        related_supplements = []
+                        for supp_name, supp_info in supplement_data.items():
+                            if selected_biomarker.upper() in [b.upper() for b in supp_info.get('biomarkers', [])]:
+                                related_supplements.append({
+                                    'Suplemento': supp_info['name'],
+                                    'Dosis': f"{supp_info['min_dose']}-{supp_info['max_dose']} {supp_info['unit']}",
+                                    'Biomarcadores': ', '.join(supp_info.get('biomarkers', []))
+                                })
+                        
+                        if related_supplements:
+                            st.dataframe(pd.DataFrame(related_supplements), use_container_width=True)
+                        else:
+                            st.info("No se encontraron suplementos relacionados con este biomarcador en el stack actual")
+                    
+                    # Gráfico de dispersión: Dosis vs Nivel (cuando haya múltiples exámenes)
+                    if len(biomarker_data) >= 2:
+                        st.subheader("Análisis de Correlación")
+                        st.info("Cuando tengas un segundo examen de sangre después de iniciar la suplementación, aquí se mostrará la relación entre dosis y niveles.")
+                        
+                        # Preparar datos para cuando haya información de dosis
+                        # Por ahora, mostrar mensaje informativo
+                        st.markdown("""
+                        **Nota:** Para visualizar la relación dosis vs nivel, necesitas:
+                        1. Al menos 2 exámenes de sangre (antes y después de suplementación)
+                        2. Registrar las dosis diarias de suplementos tomadas
+                        3. El sistema calculará automáticamente la correlación
+                        """)
+            except Exception as e:
+                st.error(f"Error en la pestaña de Seguimiento: {e}")
+                st.exception(e)
+        
+        # Tab 7: Reportes
+        with tab7:
             st.header("Reportes Generados")
             
             st.subheader("Tarjeta Farmacogenómica")
