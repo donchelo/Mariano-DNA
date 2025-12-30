@@ -101,6 +101,11 @@ class GenomeParser:
             return self.genome_index[rsid]
         return None
     
+    # Alias para compatibilidad
+    def get_snp(self, rsid: str) -> Optional[str]:
+        """Alias de get_genotype para compatibilidad"""
+        return self.get_genotype(rsid)
+    
     def get_snps(self, rsids: list) -> Dict[str, Optional[str]]:
         """
         Obtiene genotipos para múltiples rsIDs

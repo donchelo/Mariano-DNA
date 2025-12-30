@@ -3,6 +3,7 @@ Mapeador de SNPs a sistemas biológicos
 Agrupa hallazgos genéticos por sistemas para visualización de riesgo
 """
 
+import pandas as pd
 from typing import Dict, List, Optional
 from dataclasses import dataclass
 from .analyzer import Finding
@@ -205,15 +206,13 @@ class SystemMapper:
         
         return min(1.0, max(0.0, normalized))
     
-    def get_system_risk_dataframe(self) -> 'pd.DataFrame':
+    def get_system_risk_dataframe(self) -> pd.DataFrame:
         """
         Retorna un DataFrame con los datos de riesgo por sistema
         
         Returns:
             DataFrame con columnas: Sistema, Total SNPs, SNPs de Riesgo, Score, Alto, Medio, Bajo
         """
-        import pandas as pd
-        
         data = []
         for system_name, system_risk in self.system_risks.items():
             if system_risk.total_snps > 0:  # Solo incluir sistemas con SNPs

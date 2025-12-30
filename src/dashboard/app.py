@@ -17,11 +17,17 @@ from typing import Optional, Dict, List, Any
 from datetime import datetime
 
 # Agregar el directorio src al path para imports
-project_root = Path(__file__).parent.parent.parent
-src_path = project_root / "src"
-sys.path.insert(0, str(src_path))
-sys.path.insert(0, str(project_root))
+try:
+    project_root = Path(__file__).parent.parent.parent
+    src_path = project_root / "src"
+    if str(src_path) not in sys.path:
+        sys.path.insert(0, str(src_path))
+    if str(project_root) not in sys.path:
+        sys.path.insert(0, str(project_root))
+except Exception:
+    pass
 
+import dna_analyzer
 from dna_analyzer.parser import GenomeParser
 from dna_analyzer.analyzer import GeneticAnalyzer
 from dna_analyzer.snp_database import SNPDatabase
@@ -195,6 +201,7 @@ def load_biomarker_history() -> pd.DataFrame:
 
 def main():
     """Función principal del dashboard"""
+    import sys  # Re-importar para asegurar disponibilidad en el scope
     st.set_page_config(
         page_title="Análisis Genético - Mariano DNA",
         page_icon="🧬",
@@ -218,6 +225,11 @@ def main():
     # Inicializar componentes
     try:
         parser = GenomeParser(str(genome_file))
+        
+        # Parsear el genoma (cargar datos en memoria)
+        with st.spinner("Cargando genoma..."):
+            parser.parse()
+        
         snp_db = SNPDatabase()
         report_extractor = ReportExtractor()
         analyzer = GeneticAnalyzer(parser, snp_db, report_extractor)
@@ -262,28 +274,89 @@ def main():
             
             with col1:
                 st.subheader("Hallazgos por Categoría")
-                category_data = stats['by_category']
-                if category_data:
-                    fig = px.pie(
-                        values=list(category_data.values()),
-                        names=list(category_data.keys()),
-                        title="Distribución por Categoría"
-                    )
-                    st.plotly_chart(fig, use_container_width=True)
+                category_data = stats.get('by_category', {})
+                if category_data and len(category_data) > 0:
+                    try:
+                        # Filtrar valores None o vacíos
+                        filtered_data = {k: int(v) for k, v in category_data.items() if v and v > 0}
+                        if filtered_data:
+                            # Usar go.Figure directamente para evitar problemas con plotly.express
+                            labels = list(filtered_data.keys())
+                            values = list(filtered_data.values())
+                            
+                            fig = go.Figure(data=[go.Pie(
+                                labels=labels,
+                                values=values,
+                                title="Distribución por Categoría"
+                            )])
+                            fig.update_layout(title="Distribución por Categoría")
+                            st.plotly_chart(fig, use_container_width=True)
+                        else:
+                            st.info("No hay hallazgos por categoría para mostrar.")
+                    except Exception as e:
+                        st.error(f"Error creando gráfico de categorías: {e}")
+                        # Mostrar tabla como alternativa
+                        if category_data:
+                            df_cat = pd.DataFrame(list(category_data.items()), columns=['Categoría', 'Cantidad'])
+                            st.dataframe(df_cat, use_container_width=True)
+                else:
+                    st.info("No hay hallazgos por categoría para mostrar. El análisis genético no encontró SNPs relevantes en el genoma.")
             
             with col2:
                 st.subheader("Hallazgos por Importancia")
-                importance_data = stats['by_importance']
-                if importance_data:
-                    colors = {'alto': 'red', 'medio': 'orange', 'bajo': 'green'}
-                    fig = px.bar(
-                        x=list(importance_data.keys()),
-                        y=list(importance_data.values()),
-                        title="Distribución por Importancia",
-                        color=list(importance_data.keys()),
-                        color_discrete_map=colors
-                    )
-                    st.plotly_chart(fig, use_container_width=True)
+                importance_data = stats.get('by_importance', {})
+                if importance_data and len(importance_data) > 0:
+                    try:
+                        # Filtrar valores None o vacíos
+                        filtered_data = {k: int(v) for k, v in importance_data.items() if v and v > 0}
+                        if filtered_data:
+                            # Usar go.Figure directamente para evitar problemas con plotly.express
+                            x_values = list(filtered_data.keys())
+                            y_values = list(filtered_data.values())
+                            
+                            # Mapear colores
+                            colors_map = {'alto': 'red', 'medio': 'orange', 'bajo': 'green'}
+                            bar_colors = [colors_map.get(imp, 'blue') for imp in x_values]
+                            
+                            fig = go.Figure(data=[go.Bar(
+                                x=x_values,
+                                y=y_values,
+                                marker_color=bar_colors,
+                                text=y_values,
+                                textposition='auto'
+                            )])
+                            fig.update_layout(
+                                title="Distribución por Importancia",
+                                xaxis_title="Importancia",
+                                yaxis_title="Cantidad"
+                            )
+                            st.plotly_chart(fig, use_container_width=True)
+                        else:
+                            st.info("No hay hallazgos por importancia para mostrar.")
+                    except Exception as e:
+                        st.error(f"Error creando gráfico de importancia: {e}")
+                        # Mostrar tabla como alternativa
+                        if importance_data:
+                            df_imp = pd.DataFrame(list(importance_data.items()), columns=['Importancia', 'Cantidad'])
+                            st.dataframe(df_imp, use_container_width=True)
+                else:
+                    st.info("No hay hallazgos por importancia para mostrar.")
+            
+            # Mensaje informativo si no hay hallazgos
+            if stats['total_findings'] == 0:
+                st.warning("""
+                **⚠️ No se encontraron hallazgos genéticos**
+                
+                Esto puede deberse a:
+                - El genoma no contiene los SNPs buscados en la base de datos
+                - El formato del archivo de genoma no es compatible
+                - Los SNPs están presentes pero no se identificaron como de riesgo
+                
+                **Sugerencias:**
+                - Verifica que el archivo de genoma esté en formato 23andMe
+                - Revisa la pestaña de "Hallazgos" para ver si hay información en reportes externos
+                - El análisis puede estar funcionando correctamente si no hay variantes de riesgo significativas
+                """)
         
         # Tab 2: Hallazgos
         with tab2:
@@ -526,157 +599,157 @@ def main():
                 if biomarker_df.empty:
                     st.warning("No se encontraron exámenes de sangre. Agrega archivos JSON parseados en `data/raw/examenes_sangre/`")
                 else:
-                # Seleccionar biomarcador
-                available_biomarkers = sorted(biomarker_df['test_name'].unique())
-                selected_biomarker = st.selectbox(
-                    "Seleccionar biomarcador para visualizar",
-                    options=available_biomarkers
-                )
-                
-                if selected_biomarker:
-                    # Filtrar datos del biomarcador seleccionado
-                    biomarker_data = biomarker_df[biomarker_df['test_name'] == selected_biomarker].copy()
+                    # Seleccionar biomarcador
+                    available_biomarkers = sorted(biomarker_df['test_name'].unique())
+                    selected_biomarker = st.selectbox(
+                        "Seleccionar biomarcador para visualizar",
+                        options=available_biomarkers
+                    )
                     
-                    if not biomarker_data.empty:
-                        # Gráfico de evolución temporal
-                        st.subheader(f"Evolución de {selected_biomarker}")
+                    if selected_biomarker:
+                        # Filtrar datos del biomarcador seleccionado
+                        biomarker_data = biomarker_df[biomarker_df['test_name'] == selected_biomarker].copy()
                         
-                        # Preparar datos: convertir fechas y filtrar valores inválidos
-                        plot_data = biomarker_data.copy()
-                        
-                        # Convertir fechas de forma segura
-                        try:
-                            # Intentar convertir a datetime
-                            if not pd.api.types.is_datetime64_any_dtype(plot_data['date']):
-                                plot_data['date'] = pd.to_datetime(plot_data['date'], errors='coerce')
+                        if not biomarker_data.empty:
+                            # Gráfico de evolución temporal
+                            st.subheader(f"Evolución de {selected_biomarker}")
                             
-                            # Si hay NaT, usar índice como fallback
-                            if plot_data['date'].isna().any():
+                            # Preparar datos: convertir fechas y filtrar valores inválidos
+                            plot_data = biomarker_data.copy()
+                            
+                            # Convertir fechas de forma segura
+                            try:
+                                # Intentar convertir a datetime
+                                if not pd.api.types.is_datetime64_any_dtype(plot_data['date']):
+                                    plot_data['date'] = pd.to_datetime(plot_data['date'], errors='coerce')
+                                
+                                # Si hay NaT, usar índice como fallback
+                                if plot_data['date'].isna().any():
+                                    plot_data['date'] = plot_data.index.astype(str)
+                                else:
+                                    # Convertir datetime a string para Plotly
+                                    plot_data['date'] = plot_data['date'].astype(str)
+                            except Exception as date_error:
+                                # Si falla la conversión, usar índice
                                 plot_data['date'] = plot_data.index.astype(str)
+                            
+                            # Convertir a lista para evitar problemas con Plotly
+                            x_values = plot_data['date'].tolist()
+                            y_values = plot_data['value'].tolist()
+                            
+                            # Validar que tenemos datos válidos
+                            if not x_values or not y_values:
+                                st.warning("No hay datos válidos para graficar")
                             else:
-                                # Convertir datetime a string para Plotly
-                                plot_data['date'] = plot_data['date'].astype(str)
-                        except Exception as date_error:
-                            # Si falla la conversión, usar índice
-                            plot_data['date'] = plot_data.index.astype(str)
-                        
-                        # Convertir a lista para evitar problemas con Plotly
-                        x_values = plot_data['date'].tolist()
-                        y_values = plot_data['value'].tolist()
-                        
-                        # Validar que tenemos datos válidos
-                        if not x_values or not y_values:
-                            st.warning("No hay datos válidos para graficar")
-                        else:
-                            # Crear gráfico de línea con rangos de referencia
-                            fig = go.Figure()
-                            
-                            # Agregar línea de valores
-                            fig.add_trace(go.Scatter(
-                                x=x_values,
-                                y=y_values,
-                                mode='lines+markers',
-                                name='Valor Medido',
-                                line=dict(color='blue', width=2),
-                                marker=dict(size=10)
-                            ))
-                            
-                            # Agregar rangos de referencia si están disponibles
-                            if plot_data['reference_min'].notna().any():
-                                ref_min = plot_data['reference_min'].dropna().iloc[0]
-                                if pd.notna(ref_min):
-                                    fig.add_trace(go.Scatter(
-                                        x=x_values,
-                                        y=[ref_min] * len(plot_data),
-                                        mode='lines',
-                                        name='Límite Mínimo',
-                                        line=dict(color='green', width=1, dash='dash'),
-                                        showlegend=True
-                                    ))
-                            
-                            if plot_data['reference_max'].notna().any():
-                                ref_max = plot_data['reference_max'].dropna().iloc[0]
-                                if pd.notna(ref_max):
-                                    fig.add_trace(go.Scatter(
-                                        x=x_values,
-                                        y=[ref_max] * len(plot_data),
-                                        mode='lines',
-                                        name='Límite Máximo',
-                                        line=dict(color='red', width=1, dash='dash'),
-                                        showlegend=True
-                                    ))
-                            
-                            # Agregar zona óptima (si hay información)
-                            # Por ejemplo, para homocisteína, el óptimo es <7 µmol/L
-                            optimal_ranges = {
-                                'HOMOCISTEINA': (0, 7),
-                                'VITAMINA D': (50, 70),
-                                'VITAMINA B-12': (800, 2000),
-                                'ÁCIDO FÓLICO': (15, 20),
-                                'GLICEMIA': (70, 85),
-                                'COLESTEROL LDL': (0, 100),
-                                'COLESTEROL HDL': (50, 100)
-                            }
-                            
-                            biomarker_key = selected_biomarker.upper()
-                            if biomarker_key in optimal_ranges:
-                                opt_min, opt_max = optimal_ranges[biomarker_key]
+                                # Crear gráfico de línea con rangos de referencia
+                                fig = go.Figure()
+                                
+                                # Agregar línea de valores
                                 fig.add_trace(go.Scatter(
                                     x=x_values,
-                                    y=[opt_max] * len(plot_data),
-                                    mode='lines',
-                                    name='Óptimo Superior',
-                                    line=dict(color='lightgreen', width=1, dash='dot'),
-                                    fillcolor='rgba(144, 238, 144, 0.2)',
-                                    fill='tonexty' if plot_data['reference_min'].notna().any() else None,
-                                    showlegend=True
+                                    y=y_values,
+                                    mode='lines+markers',
+                                    name='Valor Medido',
+                                    line=dict(color='blue', width=2),
+                                    marker=dict(size=10)
                                 ))
+                                
+                                # Agregar rangos de referencia si están disponibles
+                                if plot_data['reference_min'].notna().any():
+                                    ref_min = plot_data['reference_min'].dropna().iloc[0]
+                                    if pd.notna(ref_min):
+                                        fig.add_trace(go.Scatter(
+                                            x=x_values,
+                                            y=[ref_min] * len(plot_data),
+                                            mode='lines',
+                                            name='Límite Mínimo',
+                                            line=dict(color='green', width=1, dash='dash'),
+                                            showlegend=True
+                                        ))
+                                
+                                if plot_data['reference_max'].notna().any():
+                                    ref_max = plot_data['reference_max'].dropna().iloc[0]
+                                    if pd.notna(ref_max):
+                                        fig.add_trace(go.Scatter(
+                                            x=x_values,
+                                            y=[ref_max] * len(plot_data),
+                                            mode='lines',
+                                            name='Límite Máximo',
+                                            line=dict(color='red', width=1, dash='dash'),
+                                            showlegend=True
+                                        ))
+                                
+                                # Agregar zona óptima (si hay información)
+                                # Por ejemplo, para homocisteína, el óptimo es <7 µmol/L
+                                optimal_ranges = {
+                                    'HOMOCISTEINA': (0, 7),
+                                    'VITAMINA D': (50, 70),
+                                    'VITAMINA B-12': (800, 2000),
+                                    'ÁCIDO FÓLICO': (15, 20),
+                                    'GLICEMIA': (70, 85),
+                                    'COLESTEROL LDL': (0, 100),
+                                    'COLESTEROL HDL': (50, 100)
+                                }
+                                
+                                biomarker_key = selected_biomarker.upper()
+                                if biomarker_key in optimal_ranges:
+                                    opt_min, opt_max = optimal_ranges[biomarker_key]
+                                    fig.add_trace(go.Scatter(
+                                        x=x_values,
+                                        y=[opt_max] * len(plot_data),
+                                        mode='lines',
+                                        name='Óptimo Superior',
+                                        line=dict(color='lightgreen', width=1, dash='dot'),
+                                        fillcolor='rgba(144, 238, 144, 0.2)',
+                                        fill='tonexty' if plot_data['reference_min'].notna().any() else None,
+                                        showlegend=True
+                                    ))
+                                
+                                units_str = plot_data['units'].iloc[0] if plot_data['units'].notna().any() else ''
+                                fig.update_layout(
+                                    title=f"Evolución de {selected_biomarker}",
+                                    xaxis_title="Fecha",
+                                    yaxis_title=f"Valor ({units_str})",
+                                    height=500,
+                                    hovermode='x unified'
+                                )
+                                st.plotly_chart(fig, use_container_width=True)
                             
-                            units_str = plot_data['units'].iloc[0] if plot_data['units'].notna().any() else ''
-                            fig.update_layout(
-                                title=f"Evolución de {selected_biomarker}",
-                                xaxis_title="Fecha",
-                                yaxis_title=f"Valor ({units_str})",
-                                height=500,
-                                hovermode='x unified'
-                            )
-                            st.plotly_chart(fig, use_container_width=True)
-                        
-                        # Mostrar tabla de datos
-                        st.subheader("Datos Históricos")
-                        display_df = biomarker_data[['date', 'value', 'units', 'reference_min', 'reference_max']].copy()
-                        display_df.columns = ['Fecha', 'Valor', 'Unidades', 'Ref. Mín', 'Ref. Máx']
-                        st.dataframe(display_df, use_container_width=True)
-                        
-                        # Información de suplementos relacionados
-                        st.subheader("Suplementos Relacionados")
-                        related_supplements = []
-                        for supp_name, supp_info in supplement_data.items():
-                            if selected_biomarker.upper() in [b.upper() for b in supp_info.get('biomarkers', [])]:
-                                related_supplements.append({
-                                    'Suplemento': supp_info['name'],
-                                    'Dosis': f"{supp_info['min_dose']}-{supp_info['max_dose']} {supp_info['unit']}",
-                                    'Biomarcadores': ', '.join(supp_info.get('biomarkers', []))
-                                })
-                        
-                        if related_supplements:
-                            st.dataframe(pd.DataFrame(related_supplements), use_container_width=True)
-                        else:
-                            st.info("No se encontraron suplementos relacionados con este biomarcador en el stack actual")
-                    
-                    # Gráfico de dispersión: Dosis vs Nivel (cuando haya múltiples exámenes)
-                    if len(biomarker_data) >= 2:
-                        st.subheader("Análisis de Correlación")
-                        st.info("Cuando tengas un segundo examen de sangre después de iniciar la suplementación, aquí se mostrará la relación entre dosis y niveles.")
-                        
-                        # Preparar datos para cuando haya información de dosis
-                        # Por ahora, mostrar mensaje informativo
-                        st.markdown("""
-                        **Nota:** Para visualizar la relación dosis vs nivel, necesitas:
-                        1. Al menos 2 exámenes de sangre (antes y después de suplementación)
-                        2. Registrar las dosis diarias de suplementos tomadas
-                        3. El sistema calculará automáticamente la correlación
-                        """)
+                            # Mostrar tabla de datos
+                            st.subheader("Datos Históricos")
+                            display_df = biomarker_data[['date', 'value', 'units', 'reference_min', 'reference_max']].copy()
+                            display_df.columns = ['Fecha', 'Valor', 'Unidades', 'Ref. Mín', 'Ref. Máx']
+                            st.dataframe(display_df, use_container_width=True)
+                            
+                            # Información de suplementos relacionados
+                            st.subheader("Suplementos Relacionados")
+                            related_supplements = []
+                            for supp_name, supp_info in supplement_data.items():
+                                if selected_biomarker.upper() in [b.upper() for b in supp_info.get('biomarkers', [])]:
+                                    related_supplements.append({
+                                        'Suplemento': supp_info['name'],
+                                        'Dosis': f"{supp_info['min_dose']}-{supp_info['max_dose']} {supp_info['unit']}",
+                                        'Biomarcadores': ', '.join(supp_info.get('biomarkers', []))
+                                    })
+                            
+                            if related_supplements:
+                                st.dataframe(pd.DataFrame(related_supplements), use_container_width=True)
+                            else:
+                                st.info("No se encontraron suplementos relacionados con este biomarcador en el stack actual")
+                            
+                            # Gráfico de dispersión: Dosis vs Nivel (cuando haya múltiples exámenes)
+                            if len(biomarker_data) >= 2:
+                                st.subheader("Análisis de Correlación")
+                                st.info("Cuando tengas un segundo examen de sangre después de iniciar la suplementación, aquí se mostrará la relación entre dosis y niveles.")
+                                
+                                # Preparar datos para cuando haya información de dosis
+                                # Por ahora, mostrar mensaje informativo
+                                st.markdown("""
+                                **Nota:** Para visualizar la relación dosis vs nivel, necesitas:
+                                1. Al menos 2 exámenes de sangre (antes y después de suplementación)
+                                2. Registrar las dosis diarias de suplementos tomadas
+                                3. El sistema calculará automáticamente la correlación
+                                """)
             except Exception as e:
                 st.error(f"Error en la pestaña de Seguimiento: {e}")
                 st.exception(e)
@@ -707,6 +780,7 @@ def main():
         st.exception(e)
 
 
-if __name__ == '__main__':
-    main()
+# Streamlit ejecuta el código del archivo directamente
+# Llamar main() siempre para que Streamlit lo ejecute
+main()
 

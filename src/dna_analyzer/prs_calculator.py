@@ -132,7 +132,7 @@ class PRSCalculator:
             weight = snp_def['weight']
             
             # Obtener genotipo del genoma
-            genotype = self.genome_parser.get_snp(rsid)
+            genotype = self.genome_parser.get_genotype(rsid)
             if not genotype:
                 continue
             

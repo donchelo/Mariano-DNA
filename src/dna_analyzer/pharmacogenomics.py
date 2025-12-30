@@ -94,7 +94,7 @@ class PharmacogenomicsAnalyzer:
         # Obtener genotipos del genoma
         genotypes = {}
         for rsid in snps:
-            genotype = self.genome_parser.get_snp(rsid)
+            genotype = self.genome_parser.get_genotype(rsid)
             if genotype:
                 genotypes[rsid] = genotype
         
