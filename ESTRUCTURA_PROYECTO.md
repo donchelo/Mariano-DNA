@@ -86,7 +86,21 @@ Este documento explica el propósito de cada carpeta y tipo de archivo en el pro
 - **`report_generator.py`**: Generador de reportes en Markdown
 - **`__init__.py`**: Inicialización del módulo
 
-**Naming**: `snake_case.py` (en inglés, siguiendo convenciones Python)
+#### `src/agents/` - Sistema Multi-Agente
+**Propósito**: Orquestación de agentes inteligentes para razonamiento clínico.
+
+- **`orchestrator.py`**: Coordinador central del flujo de agentes (LangGraph).
+- **`state.py`**: Definición del estado compartido entre agentes.
+- **`genomics_agent.py`**: Agente especializado en interpretación de variantes.
+- **`biomarker_agent.py`**: Agente especializado en análisis de laboratorio.
+- **`reasoning_agent.py`**: Agente de síntesis y razonamiento clínico.
+- **`literature_agent.py`**: Agente de búsqueda bibliográfica.
+- **`protocol_agent.py`**: Agente de diseño de protocolos de suplementación.
+
+#### `src/dashboard/` - Interfaz de Usuario
+**Propósito**: Aplicación web interactiva para visualización de resultados.
+
+- **`app.py`**: Aplicación Streamlit principal.
 
 #### `src/scripts/` - Scripts de Ejecución
 **Propósito**: Scripts ejecutables que orquestan el análisis.
@@ -269,6 +283,6 @@ data/processed/
 
 ---
 
-**Última actualización**: Diciembre 2025  
-**Versión**: 1.0
+**Última actualización**: Enero 2026  
+**Versión**: 2.0 (Incluye Agentes y Dashboard)
 

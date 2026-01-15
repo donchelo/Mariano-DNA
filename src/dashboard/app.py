@@ -37,6 +37,13 @@ from dna_analyzer.prs_calculator import PRSCalculator
 from dna_analyzer.clinvar_client import ClinVarClient
 from dna_analyzer.system_mapper import SystemMapper
 
+# Importar agentes para el Chat
+try:
+    from agents.orchestrator import MarianoDNAOrchestrator, create_initial_state
+    HAS_AGENTS = True
+except ImportError:
+    HAS_AGENTS = False
+
 
 def find_genome_file() -> Optional[Path]:
     """Encuentra el archivo de genoma más reciente"""
@@ -201,25 +208,92 @@ def load_biomarker_history() -> pd.DataFrame:
 
 def main():
     """Función principal del dashboard"""
-    import sys  # Re-importar para asegurar disponibilidad en el scope
     st.set_page_config(
-        page_title="Análisis Genético - Mariano DNA",
+        page_title="Mariano DNA - Control Center",
         page_icon="🧬",
         layout="wide"
     )
     
-    st.title("🧬 Dashboard de Análisis Genético")
+    # Navegación en la barra lateral
+    st.sidebar.title("🧬 Mariano DNA")
+    st.sidebar.markdown("---")
+    
+    menu_option = st.sidebar.radio(
+        "Navegación",
+        ["🏠 Inicio", "📊 Panel de Salud", "⚙️ Servicios y Acciones", "📚 Biblioteca", "🤖 Asistente AI"]
+    )
+    
+    # Buscar archivo de genoma (necesario para casi todo)
+    genome_file = find_genome_file()
+    
+    if menu_option == "🏠 Inicio":
+        render_home_section()
+    elif menu_option == "📊 Panel de Salud":
+        render_health_panel(genome_file)
+    elif menu_option == "⚙️ Servicios y Acciones":
+        render_services_section()
+    elif menu_option == "📚 Biblioteca":
+        render_library_section()
+    elif menu_option == "🤖 Asistente AI":
+        render_ai_assistant(genome_file)
+
+
+def render_home_section():
+    """Renderiza la página de inicio con instrucciones"""
+    st.title("🧬 Mariano DNA - Centro de Control")
+    st.markdown("""
+    Bienvenido al ecosistema de optimización de salud de Mariano DNA. Desde este panel puedes gestionar todo tu análisis genético y epigenético.
+    
+    ### 🧭 Guía de Navegación
+    
+    1.  **🏠 Inicio**: Estado actual de tus archivos y guía rápida.
+    2.  **📊 Panel de Salud**: Visualiza tus hallazgos genéticos, riesgos poligénicos (PRS), farmacogenómica y seguimiento de biomarcadores.
+    3.  **⚙️ Servicios y Acciones**: Ejecuta los motores de análisis para actualizar tus resultados cuando añadas nuevos datos de ADN o sangre.
+    4.  **📚 Biblioteca**: Consulta tus protocolos de suplementación, listas de compras y guías de referencia rápida.
+    5.  **🤖 Asistente AI**: Interactúa con un equipo de agentes inteligentes que razonan sobre tus datos para darte recomendaciones personalizadas.
+    
+    ---
+    ### 📂 Estado de los Datos
+    """)
+    
+    col1, col2 = st.columns(2)
+    
+    genome_file = find_genome_file()
+    blood_tests = find_blood_test_files()
+    
+    with col1:
+        st.subheader("🧬 Genoma")
+        if genome_file:
+            st.success(f"Detectado: `{genome_file.name}`")
+            st.info(f"Última modificación: {datetime.fromtimestamp(genome_file.stat().st_mtime).strftime('%Y-%m-%d %H:%M:%S')}")
+        else:
+            st.error("No se detectó archivo de genoma en `data/raw/genome/`.")
+            
+    with col2:
+        st.subheader("🩸 Exámenes de Sangre")
+        if blood_tests:
+            st.success(f"Detectados {len(blood_tests)} exámenes parseados.")
+            latest_test = blood_tests[0]
+            st.info(f"Más reciente: `{latest_test['test_name']}` ({latest_test['sample_date']})")
+        else:
+            st.warning("No se detectaron exámenes de sangre parseados en `data/raw/examenes_sangre/`.")
+
+    st.markdown("---")
+    st.info("💡 **Consejo:** Si acabas de añadir nuevos datos, ve a **⚙️ Servicios y Acciones** para actualizar los reportes.")
+
+
+def render_health_panel(genome_file):
+    """Renderiza el panel de salud tradicional"""
+    st.title("📊 Panel de Salud")
     st.markdown("---")
     
-    # Sidebar para configuración
-    st.sidebar.header("Configuración")
+    # Sidebar para configuración (ahora dentro del panel de salud)
+    st.sidebar.header("Configuración Panel")
     
-    # Buscar archivo de genoma
-    genome_file = find_genome_file()
     if genome_file:
-        st.sidebar.success(f"Genoma encontrado: {genome_file.name}")
+        st.sidebar.success(f"Genoma: {genome_file.name}")
     else:
-        st.sidebar.error("No se encontró archivo de genoma")
+        st.sidebar.error("No se encontró genoma")
         st.stop()
     
     # Inicializar componentes
@@ -232,6 +306,19 @@ def main():
         
         snp_db = SNPDatabase()
         report_extractor = ReportExtractor()
+        
+        # Cargar datos de Promethease si están disponibles
+        promethease_json = Path("data/processed/hallazgos_geneticos.json")
+        if promethease_json.exists():
+            report_extractor.extract_file(str(promethease_json))
+        else:
+            # Buscar en reportes_proveedores
+            promethease_dir = Path("data/raw/reportes_proveedores/promethease")
+            if promethease_dir.exists():
+                json_files = list(promethease_dir.glob("*.json"))
+                if json_files:
+                    report_extractor.extract_file(str(max(json_files, key=lambda p: p.stat().st_mtime)))
+        
         analyzer = GeneticAnalyzer(parser, snp_db, report_extractor)
         
         # Ejecutar análisis
@@ -240,7 +327,7 @@ def main():
             stats = analyzer.get_statistics()
         
         # Tabs principales
-        tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
+        tab_list = [
             "📊 Resumen", 
             "🔍 Hallazgos", 
             "💊 Farmacogenómica",
@@ -248,7 +335,11 @@ def main():
             "🗺️ Mapa de Riesgo",
             "📈 Seguimiento",
             "📋 Reportes"
-        ])
+        ]
+        
+        tabs = st.tabs(tab_list)
+        
+        tab1, tab2, tab3, tab4, tab5, tab6, tab7 = tabs
         
         # Tab 1: Resumen
         with tab1:
@@ -393,6 +484,15 @@ def main():
                         st.write(f"**Importancia:** {finding.importance}")
                         if finding.magnitude:
                             st.write(f"**Magnitud:** {finding.magnitude}")
+                        # Mostrar repute con iconos y colores
+                        if finding.repute:
+                            repute_emoji = {'Good': '✅', 'Bad': '⚠️', 'Not Set': '⚪'}.get(finding.repute, '')
+                            if finding.repute == 'Good':
+                                st.markdown(f"**Reputación:** <span style='color:green'>{repute_emoji} {finding.repute} (Protector)</span>", unsafe_allow_html=True)
+                            elif finding.repute == 'Bad':
+                                st.markdown(f"**Reputación:** <span style='color:red'>{repute_emoji} {finding.repute} (De Riesgo)</span>", unsafe_allow_html=True)
+                            else:
+                                st.write(f"**Reputación:** {repute_emoji} {finding.repute}")
                     
                     with col2:
                         st.write(f"**Descripción:** {finding.description}")
@@ -774,7 +874,7 @@ def main():
                 st.text_area("Reporte PRS", prs_report, height=400)
             except Exception as e:
                 st.error(f"Error generando reporte PRS: {e}")
-    
+        
     except Exception as e:
         st.error(f"Error inicializando análisis: {e}")
         st.exception(e)

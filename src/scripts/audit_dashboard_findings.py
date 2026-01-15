@@ -134,20 +134,36 @@ class FindingsAuditor:
             # Si tiene alta magnitud (>= 3.5) y no es protector/normal, debería ser alta importancia
             if magnitude >= 3.5:
                 # Verificar si es protector o normal
-                is_protective = any(kw in finding.implications.lower() for kw in [
+                # PRIMERO verificar repute (tiene prioridad)
+                is_protective_by_repute = finding.repute == 'Good'
+                is_risk_by_repute = finding.repute == 'Bad'
+                
+                is_protective = is_protective_by_repute or any(kw in finding.implications.lower() for kw in [
                     'protector', 'protección', 'reduced risk', 'lower risk', 'bajo riesgo'
                 ])
                 is_normal = any(kw in finding.implications.lower() for kw in [
                     'normal', 'función normal', 'riesgo bajo'
                 ])
                 
-                if not is_protective and not is_normal:
+                # Si es protector por repute, importancia debe ser "bajo"
+                if is_protective_by_repute and importance != 'bajo':
+                    issues.append({
+                        'rsid': finding.rsid,
+                        'gene': finding.snp_info.gene if finding.snp_info else 'N/A',
+                        'magnitude': magnitude,
+                        'repute': finding.repute,
+                        'assigned_importance': importance,
+                        'expected_importance': 'bajo',
+                        'issue': f'Repute "Good" (protector) con alta magnitud ({magnitude}) pero importancia {importance}, debería ser "bajo"'
+                    })
+                elif not is_protective and not is_normal and not is_protective_by_repute:
                     # Debería ser alta importancia si es de riesgo
                     if importance != 'alto':
                         issues.append({
                             'rsid': finding.rsid,
                             'gene': finding.snp_info.gene if finding.snp_info else 'N/A',
                             'magnitude': magnitude,
+                            'repute': finding.repute,
                             'assigned_importance': importance,
                             'expected_importance': 'alto',
                             'issue': f'Alta magnitud ({magnitude}) pero importancia {importance}'
@@ -198,13 +214,45 @@ class FindingsAuditor:
                         'expected_importance': 'bajo',
                         'issue': f'Genotipo normal/protector con importancia alta'
                     })
+            
+            # VALIDAR REPUTE: Si repute es "Good", debe tener importancia "bajo"
+            if finding.repute == 'Good' and finding.importance != 'bajo':
+                issues.append({
+                    'rsid': finding.rsid,
+                    'gene': finding.snp_info.gene if finding.snp_info else 'N/A',
+                    'repute': finding.repute,
+                    'assigned_importance': finding.importance,
+                    'expected_importance': 'bajo',
+                    'issue': f'Repute "Good" (protector) pero importancia es {finding.importance}, debería ser "bajo"'
+                })
+            
+            # VALIDAR REPUTE: Si repute es "Bad", no debería tener importancia "bajo" (a menos que genotipo sea normal)
+            if finding.repute == 'Bad' and finding.importance == 'bajo':
+                # Verificar si el genotipo es realmente normal
+                is_genotype_normal = False
+                if finding.snp_info and finding.snp_info.genotype_interpretation:
+                    interpretation = finding.snp_info.genotype_interpretation.get(finding.genotype, '')
+                    interpretation_lower = interpretation.lower()
+                    is_genotype_normal = any(kw in interpretation_lower for kw in [
+                        'normal', 'función normal', 'riesgo bajo'
+                    ])
+                
+                if not is_genotype_normal:
+                    issues.append({
+                        'rsid': finding.rsid,
+                        'gene': finding.snp_info.gene if finding.snp_info else 'N/A',
+                        'repute': finding.repute,
+                        'assigned_importance': finding.importance,
+                        'expected_importance': 'medio o alto',
+                        'issue': f'Repute "Bad" (de riesgo) pero importancia es "bajo" sin genotipo normal que lo justifique'
+                    })
         
         self.normal_protective_issues = issues
         
         if issues:
-            console.print(f"[yellow]Se encontraron {len(issues)} genotipos normales/protectores con importancia alta[/yellow]")
+            console.print(f"[yellow]Se encontraron {len(issues)} problemas con genotipos normales/protectores o repute[/yellow]")
         else:
-            console.print("[green]Genotipos normales/protectores validados correctamente[/green]")
+            console.print("[green]Genotipos normales/protectores y repute validados correctamente[/green]")
     
     def audit_promethease_comparison(self):
         """Compara hallazgos del dashboard con Promethease"""
@@ -368,15 +416,21 @@ class FindingsAuditor:
             report_lines.append("---")
             report_lines.append("")
         
-        # Genotipos normales/protectores
+        # Genotipos normales/protectores y problemas de repute
         if self.normal_protective_issues:
-            report_lines.append("## Genotipos Normales/Protectores con Importancia Alta")
+            report_lines.append("## Genotipos Normales/Protectores y Problemas de Repute")
             report_lines.append("")
             for issue in self.normal_protective_issues[:20]:
-                report_lines.append(f"- **{issue['rsid']}** ({issue['gene']}):")
-                report_lines.append(f"  - Genotipo: {issue['genotype']}")
-                report_lines.append(f"  - Interpretación: {issue['interpretation']}")
+                report_lines.append(f"- **{issue['rsid']}** ({issue.get('gene', 'N/A')}):")
+                if 'genotype' in issue:
+                    report_lines.append(f"  - Genotipo: {issue['genotype']}")
+                    report_lines.append(f"  - Interpretación: {issue.get('interpretation', 'N/A')}")
+                if 'repute' in issue:
+                    report_lines.append(f"  - Repute: {issue['repute']}")
                 report_lines.append(f"  - Importancia asignada: {issue['assigned_importance']}")
+                report_lines.append(f"  - Importancia esperada: {issue['expected_importance']}")
+                report_lines.append(f"  - Problema: {issue['issue']}")
+                report_lines.append("")
             if len(self.normal_protective_issues) > 20:
                 report_lines.append(f"*... y {len(self.normal_protective_issues) - 20} más*")
             report_lines.append("---")

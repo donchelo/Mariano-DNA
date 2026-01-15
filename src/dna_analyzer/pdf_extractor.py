@@ -5,6 +5,8 @@ Refactorizado con patrón Strategy para facilitar extensión
 
 import re
 import json
+import base64
+import zlib
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Dict, List, Optional, Any
@@ -75,7 +77,7 @@ class BaseReportParser(ABC):
 
 
 class PrometheaseHTMLParser(BaseReportParser):
-    """Parser para reportes HTML de Promethease"""
+    """Parser para reportes HTML de Promethease con datos comprimidos en JavaScript"""
     
     def __init__(self):
         super().__init__('promethease')
@@ -85,56 +87,258 @@ class PrometheaseHTMLParser(BaseReportParser):
         path = Path(file_path)
         return path.suffix.lower() == '.html' and 'promethease' in path.name.lower()
     
+    def _decompress_string(self, compressed_str: str) -> str:
+        """
+        Descomprime una cadena comprimida usando el mismo método que Promethease
+        (base64 -> bytes -> zlib inflate -> JSON string)
+        
+        Promethease usa: atob(s) -> charCodeAt -> Zlib.Inflate -> JSON.parse
+        """
+        try:
+            # Decodificar base64 (equivalente a atob en JavaScript)
+            compress_data = base64.b64decode(compressed_str)
+            
+            # Convertir bytes a lista de enteros (equivalente a charCodeAt en JS)
+            compress_data_int = list(compress_data)
+            
+            # Intentar descomprimir con diferentes métodos de zlib
+            # Promethease usa Zlib.Inflate que es compatible con zlib.decompress
+            try:
+                # Método 1: Descompresión estándar
+                decompressed = zlib.decompress(bytes(compress_data_int), 15 + 32)  # wbits=15+32 para gzip
+            except:
+                try:
+                    # Método 2: Sin header (raw deflate)
+                    decompressed = zlib.decompress(bytes(compress_data_int), -15)
+                except:
+                    # Método 3: Solo deflate
+                    decompressed = zlib.decompress(bytes(compress_data_int))
+            
+            # Decodificar a string UTF-8
+            return decompressed.decode('utf-8')
+        except Exception as e:
+            raise ValueError(f"Error descomprimiendo datos: {e}")
+    
+    def _extract_js_variable(self, content: str, var_name: str) -> Optional[str]:
+        """Extrae el valor de una variable JavaScript del contenido HTML"""
+        if var_name == 'mygenos':
+            # Para mygenos, necesitamos extraer TODAS las llamadas a decompressString
+            # que están dentro de push.apply para mygenos
+            # Buscar todas las llamadas a decompressString en el contexto de mygenos
+            pattern = rf'{var_name}\.push\.apply\({var_name},\s*decompressString\([\'"]([^\'"]+)[\'"]\)\)'
+            matches = list(re.finditer(pattern, content, re.DOTALL))
+            
+            if matches:
+                # Si hay múltiples matches, concatenar todos los datos comprimidos
+                # y descomprimir juntos (aunque normalmente debería ser solo uno)
+                if len(matches) > 1:
+                    # Tomar el más largo (probablemente contiene todos los datos)
+                    longest_match = max(matches, key=lambda m: len(m.group(1)))
+                    return longest_match.group(1)
+                else:
+                    return matches[0].group(1)
+            
+            # Fallback: buscar todas las llamadas a decompressString y tomar la más larga
+            # que probablemente contiene todos los datos
+            pattern_fallback = r'decompressString\([\'"]([^\'"]+)[\'"]\)'
+            all_matches = list(re.finditer(pattern_fallback, content, re.DOTALL))
+            if all_matches:
+                # Filtrar matches que están en el contexto de mygenos
+                mygenos_matches = [m for m in all_matches if 
+                                   content[max(0, m.start()-200):m.start()].find('mygenos') != -1]
+                if mygenos_matches:
+                    # Tomar el más largo
+                    longest = max(mygenos_matches, key=lambda m: len(m.group(1)))
+                    return longest.group(1)
+                else:
+                    # Si no encontramos contexto, tomar el más largo de todos
+                    longest = max(all_matches, key=lambda m: len(m.group(1)))
+                    return longest.group(1)
+        
+        # Para otras variables como metainfo
+        # Buscar patrones como: var metainfo={...}
+        pattern2 = rf'var\s+{var_name}\s*=\s*(\{{[^}}]+\}})'
+        match2 = re.search(pattern2, content, re.DOTALL)
+        if match2:
+            return match2.group(1)
+        
+        # Buscar metainfo con múltiples líneas
+        if var_name == 'metainfo':
+            pattern3 = rf'var\s+{var_name}\s*=\s*(\{{.*?\}});'
+            match3 = re.search(pattern3, content, re.DOTALL)
+            if match3:
+                return match3.group(1)
+        
+        return None
+    
+    def _parse_js_object(self, js_str: str) -> Dict[str, Any]:
+        """Convierte un objeto JavaScript a un diccionario Python"""
+        try:
+            # Limpiar el string JavaScript
+            js_str = js_str.strip()
+            
+            # Si es un objeto simple, intentar parsearlo directamente
+            if js_str.startswith('{') and js_str.endswith('}'):
+                # Reemplazar valores JavaScript por valores JSON válidos
+                js_str = re.sub(r'(\w+):', r'"\1":', js_str)  # Agregar comillas a las claves
+                js_str = re.sub(r':\s*([^,}\]]+)', lambda m: f': {json.dumps(m.group(1).strip()) if not m.group(1).strip().startswith(("{", "[", "\"")) else m.group(1)}', js_str)
+                return json.loads(js_str)
+        except:
+            pass
+        
+        # Si falla, intentar extraer valores específicos con regex
+        result = {}
+        # Buscar generation_date
+        date_match = re.search(r'generation_date:\s*new\s+Date\([^)]+\)', js_str)
+        if date_match:
+            # Extraer componentes de fecha
+            year_match = re.search(r'setUTCFullYear\((\d+)\)', js_str)
+            month_match = re.search(r'setUTCMonth\((\d+)\)', js_str)
+            day_match = re.search(r'setUTCDate\((\d+)\)', js_str)
+            if year_match and month_match and day_match:
+                result['generation_date'] = f"{year_match.group(1)}-{int(month_match.group(1))+1:02d}-{day_match.group(1)}"
+        
+        # Buscar version
+        version_match = re.search(r'version:\s*["\']([^"\']+)["\']', js_str)
+        if version_match:
+            result['version'] = version_match.group(1)
+        
+        return result
+    
     def parse(self, file_path: str) -> List[Dict[str, Any]]:
-        """Extrae hallazgos del reporte HTML de Promethease"""
+        """Extrae hallazgos del reporte HTML de Promethease con datos comprimidos"""
         findings = []
         
         try:
             with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
                 content = f.read()
             
-            # Buscar patrones de SNPs en el HTML
-            rsid_pattern = r'rs\d+'
-            rsids_found = set(re.findall(rsid_pattern, content))
+            # Intentar extraer datos comprimidos
+            compressed_data = self._extract_js_variable(content, 'mygenos')
+            metainfo_data = self._extract_js_variable(content, 'metainfo')
             
-            # Buscar secciones con información de genotipos
-            geno_pattern = r'(rs\d+)([AGCT]{2})'
-            geno_matches = re.findall(geno_pattern, content)
-            
-            for rsid, genotype in geno_matches:
-                findings.append({
-                    'rsid': rsid,
-                    'genotype': genotype,
-                    'source': self.source_name,
-                    'raw_text': f'{rsid} {genotype}'
-                })
-            
-            # Buscar texto descriptivo cerca de rsIDs
-            soup = BeautifulSoup(content, 'html.parser')
-            
-            # Buscar enlaces a SNPedia que contienen rsIDs
-            for link in soup.find_all('a', href=True):
-                href = link.get('href', '')
-                if 'snpedia.com' in href and 'rs' in href:
-                    rsid_match = re.search(r'rs\d+', href)
-                    if rsid_match:
-                        rsid = rsid_match.group()
-                        # Buscar texto cercano
-                        parent = link.parent
-                        if parent:
-                            text = parent.get_text(strip=True)
-                            if text and len(text) > 10:
-                                findings.append({
-                                    'rsid': rsid,
-                                    'description': text[:200],
-                                    'source': self.source_name,
-                                    'snpedia_url': href
-                                })
-            
-            print(f"[OK] Promethease HTML: {len(findings)} hallazgos extraidos")
+            if compressed_data:
+                try:
+                    # Descomprimir los datos
+                    decompressed_json = self._decompress_string(compressed_data)
+                    mygenos = json.loads(decompressed_json)
+                    
+                    # Buscar TODAS las llamadas a decompressString relacionadas con mygenos
+                    # y concatenar todos los arrays
+                    all_mygenos = []
+                    all_mygenos.extend(mygenos)  # Agregar el primer batch
+                    
+                    # Buscar más llamadas a decompressString en el contexto de mygenos
+                    pattern = rf'mygenos\.push\.apply\(mygenos,\s*decompressString\([\'"]([^\'"]+)[\'"]\)\)'
+                    all_matches = list(re.finditer(pattern, content, re.DOTALL))
+                    
+                    if len(all_matches) > 1:
+                        print(f"  [INFO] Encontradas {len(all_matches)} llamadas a decompressString, concatenando...")
+                        for i, match in enumerate(all_matches[1:], 1):  # Saltar el primero que ya procesamos
+                            try:
+                                comp_data = match.group(1)
+                                decomp_json = self._decompress_string(comp_data)
+                                batch = json.loads(decomp_json)
+                                all_mygenos.extend(batch)
+                                if (i + 1) % 100 == 0:
+                                    print(f"  [INFO] Procesados {i + 1} batches, {len(all_mygenos)} entradas totales...")
+                            except Exception as e:
+                                print(f"  [WARN] Error procesando batch {i+1}: {e}")
+                                continue
+                    
+                    mygenos = all_mygenos
+                    print(f"  [OK] Total de entradas extraidas: {len(mygenos)}")
+                    
+                    # Procesar cada entrada
+                    for entry in mygenos:
+                        finding = {
+                            'source': self.source_name,
+                        }
+                        
+                        # Identificar tipo de registro (SNP o genoset)
+                        if 'rsnum' in entry:
+                            finding['record_id'] = entry['rsnum']
+                            finding['record_type'] = 'snp'
+                            finding['rsid'] = entry['rsnum']
+                            genotype = entry.get('geno', '')
+                            # Limpiar genotipo: remover paréntesis si existen
+                            if genotype.startswith('(') and genotype.endswith(')'):
+                                genotype = genotype[1:-1]
+                            finding['genotype'] = genotype
+                            finding['id'] = f"{entry['rsnum']}({genotype})"
+                        elif 'title' in entry:
+                            finding['record_id'] = entry['title']
+                            finding['record_type'] = 'genoset'
+                            finding['id'] = entry['title']
+                        else:
+                            continue
+                        
+                        # Extraer campos comunes
+                        finding['summary'] = entry.get('genosummary', '')
+                        finding['description'] = entry.get('genobody', '')
+                        finding['repute'] = entry.get('repute')
+                        finding['magnitude'] = entry.get('magnitude')
+                        finding['max_magnitude'] = entry.get('maxmag')
+                        finding['frequency'] = f"{entry.get('freq', '')}%" if entry.get('freq') is not None else None
+                        finding['chromosome'] = entry.get('chrom')
+                        finding['position'] = entry.get('pos')
+                        finding['genes'] = entry.get('genes', [])
+                        finding['publications'] = entry.get('numrefs')
+                        finding['gmaf'] = entry.get('gmaf')
+                        finding['geno_modified'] = entry.get('genotime')
+                        finding['rs_modified'] = entry.get('rstime')
+                        finding['stabilized'] = entry.get('stabilized_orientation')
+                        finding['orientation'] = entry.get('orientation')
+                        finding['clinvar_significance'] = entry.get('clinvar_1')
+                        finding['topics'] = entry.get('topic', [])
+                        finding['medical_conditions'] = entry.get('cond', [])
+                        
+                        # Agregar URL de SNPedia
+                        if 'rsnum' in entry:
+                            finding['snpedia_url'] = f"https://www.snpedia.com/index.php/{entry['rsnum']}"
+                        elif 'title' in entry:
+                            finding['snpedia_url'] = f"https://www.snpedia.com/index.php/{entry['title']}"
+                        
+                        findings.append(finding)
+                    
+                    print(f"[OK] Promethease HTML: {len(findings)} hallazgos extraidos de datos comprimidos")
+                    
+                except Exception as e:
+                    print(f"⚠ Error descomprimiendo datos de Promethease: {e}")
+                    # Fallback al método anterior
+                    return self._parse_fallback(content)
+            else:
+                # Fallback al método anterior si no hay datos comprimidos
+                return self._parse_fallback(content)
             
         except Exception as e:
             print(f"⚠ Error extrayendo Promethease HTML: {e}")
+            import traceback
+            traceback.print_exc()
+        
+        return findings
+    
+    def _parse_fallback(self, content: str) -> List[Dict[str, Any]]:
+        """Método de respaldo para extraer datos del HTML sin compresión"""
+        findings = []
+        
+        # Buscar patrones de SNPs en el HTML
+        rsid_pattern = r'rs\d+'
+        rsids_found = set(re.findall(rsid_pattern, content))
+        
+        # Buscar secciones con información de genotipos
+        geno_pattern = r'(rs\d+)(\([^)]+\))'
+        geno_matches = re.findall(geno_pattern, content)
+        
+        for rsid, genotype in geno_matches:
+            findings.append({
+                'rsid': rsid,
+                'record_id': rsid,
+                'record_type': 'snp',
+                'genotype': genotype.strip('()'),
+                'source': self.source_name,
+                'id': f"{rsid}{genotype}"
+            })
         
         return findings
 

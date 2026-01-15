@@ -298,9 +298,27 @@ class GeneticAnalyzer:
             
             # Obtener datos enriquecidos de Promethease si están disponibles
             promethease_info = promethease_data.get(rsid, {})
+            promethease_repute = promethease_info.get('repute')
             
             # Determinar categoría e importancia
             category = snp_info.category if snp_info else 'salud'
+            
+            # IMPORTANTE: Considerar REPUTE de Promethease para determinar si es protector o de riesgo
+            # El repute tiene alta prioridad, pero el genotipo validado puede sobrescribirlo si es más específico
+            
+            # Si repute es "Good", es protector (independientemente de magnitud)
+            if promethease_repute == 'Good':
+                # Es un hallazgo protector, no de riesgo
+                # Sobrescribir has_risk y validated_risk_level solo si no hay validación de genotipo más específica
+                if validated_risk_level not in ['normal', 'protector']:
+                    validated_risk_level = 'protector'
+                has_risk = False
+            # Si repute es "Bad", es de riesgo (a menos que el genotipo validado sea normal/protector)
+            elif promethease_repute == 'Bad':
+                # Es de riesgo, pero verificar si el genotipo validado indica lo contrario
+                if validated_risk_level not in ['normal', 'protector']:
+                    # Confirmar que es de riesgo
+                    has_risk = True
             
             # IMPORTANTE: La importancia debe reflejar el riesgo REAL del usuario
             # Si el genotipo es normal o protector, siempre debe ser "bajo" (🟢)
@@ -347,10 +365,21 @@ class GeneticAnalyzer:
             # Construir descripción combinada
             description = snp_info.description if snp_info else ''
             if promethease_info.get('summary'):
-                if description:
-                    description = f"{promethease_info['summary']}. {description}"
+                # Si es protector (repute Good), agregar prefijo para claridad
+                if promethease_repute == 'Good':
+                    summary = promethease_info['summary']
+                    # Verificar si el summary ya indica protección
+                    if 'reduced risk' not in summary.lower() and 'protection' not in summary.lower() and 'lower risk' not in summary.lower():
+                        summary = f"Protección: {summary}"
+                    if description:
+                        description = f"{summary}. {description}"
+                    else:
+                        description = summary
                 else:
-                    description = promethease_info['summary']
+                    if description:
+                        description = f"{promethease_info['summary']}. {description}"
+                    else:
+                        description = promethease_info['summary']
             
             # Construir implicaciones (añadir interpretación del genotipo)
             implications = snp_info.implications if snp_info else ''
@@ -361,6 +390,14 @@ class GeneticAnalyzer:
                     implications = genotype_interpretation
             if promethease_info.get('description') and not implications:
                 implications = promethease_info['description'][:500]  # Limitar longitud
+            
+            # Si es protector por repute, asegurar que las implicaciones reflejen protección
+            if promethease_repute == 'Good' and validated_risk_level == 'protector':
+                if 'protección' not in implications.lower() and 'reduced risk' not in implications.lower() and 'lower risk' not in implications.lower():
+                    if implications:
+                        implications = f"Protección: {implications}"
+                    else:
+                        implications = "Este genotipo confiere protección según Promethease"
             
             # Obtener genes (priorizar Promethease si tiene más información)
             genes_list = promethease_info.get('genes', [])
@@ -388,6 +425,12 @@ class GeneticAnalyzer:
             elif found_in_reports:
                 # Incluir si está en reportes externos (puede tener información adicional)
                 should_include = True
+            elif promethease_repute == 'Good':
+                # Incluir SNPs protectores (repute Good) - información valiosa
+                should_include = True
+                if not found_in_reports:
+                    found_in_reports = True
+                    report_sources = ['promethease']
             elif promethease_info.get('magnitude', 0) >= 3.0:
                 # Incluir SNPs de alta magnitud en Promethease
                 should_include = True
