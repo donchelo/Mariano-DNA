@@ -874,13 +874,190 @@ def render_health_panel(genome_file):
                 st.text_area("Reporte PRS", prs_report, height=400)
             except Exception as e:
                 st.error(f"Error generando reporte PRS: {e}")
-        
+    
     except Exception as e:
         st.error(f"Error inicializando análisis: {e}")
         st.exception(e)
 
 
-# Streamlit ejecuta el código del archivo directamente
-# Llamar main() siempre para que Streamlit lo ejecute
-main()
+def render_services_section():
+    """Renderiza la sección de acciones y servicios"""
+    st.title("⚙️ Servicios y Acciones")
+    st.markdown("Ejecuta procesos de análisis en segundo plano.")
+    
+    import subprocess
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("🧬 Análisis Genómico")
+        if st.button("Ejecutar run_analysis.py"):
+            with st.spinner("Ejecutando análisis genético..."):
+                try:
+                    result = subprocess.run(["python", "src/scripts/run_analysis.py"], capture_output=True, text=True)
+                    if result.returncode == 0:
+                        st.success("Análisis completado exitosamente.")
+                    else:
+                        st.error(f"Error en la ejecución:\n{result.stderr}")
+                except Exception as e:
+                    st.error(f"Error al intentar ejecutar el script: {e}")
+        
+        st.subheader("🩸 Análisis Sistémico")
+        if st.button("Ejecutar analyze_blood_test_systemic.py"):
+            with st.spinner("Ejecutando análisis sistémico..."):
+                try:
+                    result = subprocess.run(["python", "src/scripts/analyze_blood_test_systemic.py"], capture_output=True, text=True)
+                    if result.returncode == 0:
+                        st.success("Análisis sistémico completado exitosamente.")
+                    else:
+                        st.error(f"Error en la ejecución:\n{result.stderr}")
+                except Exception as e:
+                    st.error(f"Error al intentar ejecutar el script: {e}")
 
+    with col2:
+        st.subheader("🔍 Auditoría y Control")
+        if st.button("Auditar Hallazgos del Dashboard"):
+            with st.spinner("Auditando hallazgos..."):
+                try:
+                    result = subprocess.run(["python", "src/scripts/audit_dashboard_findings.py"], capture_output=True, text=True)
+                    if result.returncode == 0:
+                        st.success("Auditoría completada exitosamente.")
+                    else:
+                        st.error(f"Error en la ejecución:\n{result.stderr}")
+                except Exception as e:
+                    st.error(f"Error al intentar ejecutar el script: {e}")
+        
+        st.subheader("🤖 Análisis Pro de Agentes")
+        if st.button("Ejecutar run_agent_analysis.py"):
+            with st.spinner("Ejecutando agentes en modo batch..."):
+                try:
+                    result = subprocess.run(["python", "src/scripts/run_agent_analysis.py"], capture_output=True, text=True)
+                    if result.returncode == 0:
+                        st.success("Análisis de agentes completado exitosamente.")
+                    else:
+                        st.error(f"Error en la ejecución:\n{result.stderr}")
+                except Exception as e:
+                    st.error(f"Error al intentar ejecutar el script: {e}")
+
+
+def render_library_section():
+    """Renderiza el explorador de documentos y biblioteca"""
+    st.title("📚 Biblioteca y Protocolos")
+    
+    docs_path = Path("docs/reference")
+    outputs_path = Path("outputs")
+    
+    # Combinar archivos md de ambas rutas
+    files = []
+    if docs_path.exists():
+        files.extend([f for f in docs_path.rglob("*.md")])
+    if outputs_path.exists():
+        files.extend([f for f in outputs_path.rglob("*.md")])
+    
+    if not files:
+        st.info("No se encontraron documentos Markdown.")
+        return
+    
+    # Crear diccionario de nombres para mostrar
+    file_dict = {f.name: f for f in sorted(files, key=lambda p: p.name)}
+    
+    selected_file_name = st.selectbox("Selecciona un documento para visualizar", options=list(file_dict.keys()))
+    
+    if selected_file_name:
+        selected_file_path = file_dict[selected_file_name]
+        st.markdown("---")
+        try:
+            with open(selected_file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            st.markdown(content)
+        except Exception as e:
+            st.error(f"Error al leer el archivo: {e}")
+
+
+def render_ai_assistant(genome_file):
+    """Renderiza el asistente AI"""
+    st.title("🤖 Asistente AI")
+    
+    if not HAS_AGENTS:
+        st.error("Los componentes de IA no están cargados correctamente.")
+        return
+
+    st.markdown("Interactúa con el sistema multi-agente para obtener razonamiento clínico profundo.")
+    
+    # Inicializar historial de chat si no existe
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    # Mostrar historial de chat
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+    # Input del usuario
+    if prompt := st.chat_input("¿Qué quieres saber sobre tus resultados?"):
+        # Agregar mensaje del usuario al historial
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
+        # Procesar con el orquestador
+        with st.chat_message("assistant"):
+            with st.spinner("Los agentes están analizando tus datos..."):
+                try:
+                    # Re-analizar rápido para el agente
+                    parser = GenomeParser(str(genome_file))
+                    parser.parse()
+                    snp_db = SNPDatabase()
+                    report_extractor = ReportExtractor()
+                    analyzer = GeneticAnalyzer(parser, snp_db, report_extractor)
+                    findings = analyzer.analyze()
+                    
+                    orchestrator = MarianoDNAOrchestrator()
+                    
+                    serialized_findings = []
+                    for f in findings:
+                        serialized_findings.append({
+                            "rsid": f.rsid,
+                            "genotype": f.genotype,
+                            "category": f.category,
+                            "importance": f.importance,
+                            "description": f.description,
+                            "implications": f.implications,
+                            "magnitude": f.magnitude,
+                            "repute": f.repute
+                        })
+                    
+                    blood_history = load_biomarker_history()
+                    blood_list = []
+                    if not blood_history.empty:
+                        latest_date = blood_history['date'].max()
+                        latest_blood = blood_history[blood_history['date'] == latest_date]
+                        for _, row in latest_blood.iterrows():
+                            blood_list.append({
+                                "test_name": row['test_name'],
+                                "numeric_value": row['value'],
+                                "units": row['units'],
+                                "reference_range": {"min": row['reference_min'], "max": row['reference_max']}
+                            })
+                    
+                    initial_state = create_initial_state(
+                        dna_data={"findings": serialized_findings},
+                        blood_data=blood_list,
+                        notes=prompt
+                    )
+                    
+                    final_state = orchestrator.run(initial_state)
+                    response = final_state.get("final_report", "Lo siento, no pude generar una respuesta.")
+                    
+                    with st.expander("Ver razonamiento clínico de los agentes"):
+                        for r in final_state.get("clinical_reasoning", []):
+                            st.markdown(r)
+                    
+                    st.markdown(response)
+                    st.session_state.messages.append({"role": "assistant", "content": response})
+                except Exception as agent_error:
+                    st.error(f"Error en el sistema de agentes: {agent_error}")
+
+
+if __name__ == "__main__":
+    main()
